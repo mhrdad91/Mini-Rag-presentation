@@ -44,7 +44,7 @@ def load_vectorstore():
         allow_dangerous_deserialization=True
     )
     
-    print("✅ Vector store loaded successfully")
+    print("[OK] Vector store loaded successfully")
     return vectorstore
 
 
@@ -61,7 +61,7 @@ def create_retriever(vectorstore, top_k=3):
         search_kwargs={"k": top_k}
     )
     
-    print(f"✅ Retriever created (retrieving top {top_k} chunks)")
+    print(f"[OK] Retriever created (retrieving top {top_k} chunks)")
     return retriever
 
 
@@ -83,7 +83,7 @@ Answer:"""
     
     prompt = ChatPromptTemplate.from_template(template)
     
-    print("✅ Prompt template created")
+    print("[OK] Prompt template created")
     return prompt
 
 
@@ -116,7 +116,7 @@ def build_rag_chain(retriever, prompt_template, llm):
         | StrOutputParser()
     )
     
-    print("✅ RAG chain built successfully")
+    print("[OK] RAG chain built successfully")
     return rag_chain
 
 
@@ -172,7 +172,7 @@ def main():
             openai_api_key=os.getenv("OPENAI_API_KEY")
         )
         
-        print("✅ LLM initialized")
+        print("[OK] LLM initialized")
         
         # Build RAG chain
         rag_chain = build_rag_chain(retriever, prompt_template, llm)
@@ -181,7 +181,7 @@ def main():
         test_rag_system(rag_chain)
         
         print("\n" + "=" * 80)
-        print("✅ Step 3 Complete!")
+        print("[OK] Step 3 Complete!")
         print("=" * 80)
         print("\nKey concepts:")
         print("• Retriever finds relevant chunks from vector store")
@@ -195,7 +195,7 @@ def main():
         return rag_chain
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[ERROR] Error: {e}")
         print("\nTroubleshooting:")
         print("- Ensure vector store exists (run Step 2 first)")
         print("- Check OPENAI_API_KEY is set correctly")

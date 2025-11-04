@@ -40,8 +40,8 @@ def load_documents():
     
     documents = loader.load()
     
-    print(f"\n✅ Loaded {len(documents)} documents from knowledge base")
-    print(f"📄 Document sources:")
+    print(f"\n[OK] Loaded {len(documents)} documents from knowledge base")
+    print(f"Document sources:")
     for doc in documents:
         print(f"   - {doc.metadata.get('source', 'Unknown')}")
     
@@ -66,12 +66,12 @@ def split_documents(documents, chunk_size=1000, chunk_overlap=200):
     
     chunks = text_splitter.split_documents(documents)
     
-    print(f"\n✅ Split documents into {len(chunks)} chunks")
-    print(f"📊 Average chunk size: {sum(len(chunk.page_content) for chunk in chunks) / len(chunks):.0f} characters")
-    print(f"📊 Chunk size range: {min(len(chunk.page_content) for chunk in chunks)} - {max(len(chunk.page_content) for chunk in chunks)} characters")
+    print(f"\n[OK] Split documents into {len(chunks)} chunks")
+    print(f"Average chunk size: {sum(len(chunk.page_content) for chunk in chunks) / len(chunks):.0f} characters")
+    print(f"Chunk size range: {min(len(chunk.page_content) for chunk in chunks)} - {max(len(chunk.page_content) for chunk in chunks)} characters")
     
     # Show example chunk
-    print(f"\n📝 Example chunk:")
+    print(f"\nExample chunk:")
     print(f"   Source: {chunks[0].metadata.get('source', 'Unknown')}")
     print(f"   Length: {len(chunks[0].page_content)} characters")
     print(f"   Content preview: {chunks[0].page_content[:200]}...")
@@ -97,7 +97,7 @@ def main():
         )
         
         print("\n" + "=" * 80)
-        print("✅ Step 1 Complete!")
+        print("[OK] Step 1 Complete!")
         print("=" * 80)
         print("\nNext steps:")
         print("1. Run: python code/02_create_vectorstore.py")
@@ -106,7 +106,7 @@ def main():
         return chunks
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[ERROR] Error: {e}")
         print("\nTroubleshooting:")
         print("- Ensure knowledge_base directory exists with .md files")
         print("- Check that you have necessary permissions")

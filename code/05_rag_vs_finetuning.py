@@ -29,7 +29,7 @@ try:
     UNSLOTH_AVAILABLE = True
 except ImportError:
     UNSLOTH_AVAILABLE = False
-    print("⚠️  Unsloth not installed. Install with: pip install unsloth")
+    print("[WARNING] Unsloth not installed. Install with: pip install unsloth")
 
 # RAG imports
 try:
@@ -41,7 +41,7 @@ try:
     RAG_AVAILABLE = True
 except ImportError:
     RAG_AVAILABLE = False
-    print("⚠️  LangChain not installed. Install with: pip install langchain langchain-openai langchain-community faiss-cpu")
+    print("[WARNING] LangChain not installed. Install with: pip install langchain langchain-openai langchain-community faiss-cpu")
 
 
 def create_training_data():
@@ -112,7 +112,7 @@ def setup_rag_system():
     
     vectorstore_path = Path("vectorstore")
     if not vectorstore_path.exists():
-        print("⚠️  Vector store not found. Run code/02_create_vectorstore.py first.")
+        print("[WARNING] Vector store not found. Run code/02_create_vectorstore.py first.")
         return None
     
     embeddings = OpenAIEmbeddings(
@@ -169,7 +169,7 @@ def fine_tune_model(model_name="unsloth/tinyllama-bnb-4bit", num_steps=10):
     Note: This is a minimal example. For production, use more steps and data.
     """
     if not UNSLOTH_AVAILABLE:
-        print("❌ Unsloth not available. Cannot fine-tune.")
+        print("[ERROR] Unsloth not available. Cannot fine-tune.")
         return None
     
     print(f"\n{'='*80}")
@@ -177,7 +177,7 @@ def fine_tune_model(model_name="unsloth/tinyllama-bnb-4bit", num_steps=10):
     print(f"{'='*80}")
     print(f"Model: {model_name}")
     print(f"Steps: {num_steps}")
-    print("\n📦 Loading model...")
+    print("\nLoading model...")
     
     # Load model
     model, tokenizer = FastLanguageModel.from_pretrained(
@@ -198,13 +198,13 @@ def fine_tune_model(model_name="unsloth/tinyllama-bnb-4bit", num_steps=10):
     )
     
     # Prepare training data
-    print("\n📝 Preparing training data...")
+    print("\nPreparing training data...")
     training_data = create_training_data()
     formatted_data = format_training_data(training_data)
     dataset = Dataset.from_list(formatted_data)
     
     # Setup trainer
-    print("\n🚀 Starting fine-tuning...")
+    print("\nStarting fine-tuning...")
     trainer = SFTTrainer(
         model=model,
         tokenizer=tokenizer,
@@ -220,7 +220,7 @@ def fine_tune_model(model_name="unsloth/tinyllama-bnb-4bit", num_steps=10):
     # Fast inference mode
     FastLanguageModel.for_inference(model)
     
-    print("✅ Fine-tuning complete!")
+    print("[OK] Fine-tuning complete!")
     
     return model, tokenizer
 
@@ -272,8 +272,8 @@ def compare_approaches():
     print("\n" + "="*80)
     print("OPTION 1: Fine-Tuning Approach")
     print("="*80)
-    print("⚠️  Note: Fine-tuning requires GPU and takes time.")
-    print("⚠️  For demo purposes, we'll show the concept.")
+    print("[WARNING] Note: Fine-tuning requires GPU and takes time.")
+    print("[WARNING] For demo purposes, we'll show the concept.")
     print("\nWould you like to run fine-tuning? (y/n): ", end="")
     
     fine_tuned_model = None
@@ -295,7 +295,7 @@ def compare_approaches():
     print("="*80)
     
     if rag_chain:
-        print("\n✅ RAG system ready!")
+        print("\n[OK] RAG system ready!")
         print("\nTesting RAG on sample questions:\n")
         
         for i, question in enumerate(test_questions, 1):
@@ -307,7 +307,7 @@ def compare_approaches():
                 print(f"   Error: {e}")
             print()
     else:
-        print("❌ RAG system not available")
+        print("[ERROR] RAG system not available")
     
     # Comparison
     print("\n" + "="*80)
@@ -315,21 +315,21 @@ def compare_approaches():
     print("="*80)
     print("""
 Fine-Tuning:
-  ✅ Model learns domain-specific patterns
-  ✅ No retrieval step needed at inference
-  ❌ Requires training time (hours)
-  ❌ Needs GPU for training
-  ❌ Hard to update (must retrain)
-  ❌ Limited by training data
+  [+] Model learns domain-specific patterns
+  [+] No retrieval step needed at inference
+  [-] Requires training time (hours)
+  [-] Needs GPU for training
+  [-] Hard to update (must retrain)
+  [-] Limited by training data
 
 RAG:
-  ✅ No training needed
-  ✅ Easy to update (just change knowledge base)
-  ✅ Works with any LLM
-  ✅ Can cite sources
-  ✅ Handles dynamic information
-  ❌ Requires retrieval step (slight latency)
-  ❌ Needs vector database setup
+  [+] No training needed
+  [+] Easy to update (just change knowledge base)
+  [+] Works with any LLM
+  [+] Can cite sources
+  [+] Handles dynamic information
+  [-] Requires retrieval step (slight latency)
+  [-] Needs vector database setup
     """)
 
 

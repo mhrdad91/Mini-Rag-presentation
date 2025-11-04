@@ -131,18 +131,18 @@ def main():
         print("Initializing chatbot...")
         rag_chain, retriever = build_rag_chain(vectorstore)
         
-        print("✅ Ready! Ask me anything.\n")
+        print("[OK] Ready! Ask me anything.\n")
         print("-" * 80)
         
         # Interactive loop
         while True:
             try:
                 # Get user question
-                question = input("\n💬 Your question: ").strip()
+                question = input("\nYour question: ").strip()
                 
                 # Check for exit commands
                 if question.lower() in ['quit', 'exit', 'q']:
-                    print("\n👋 Thanks for using TechCorp Support Chatbot!")
+                    print("\nThanks for using TechCorp Support Chatbot!")
                     break
                 
                 if not question:
@@ -150,37 +150,37 @@ def main():
                     continue
                 
                 # Get sources
-                print("\n🔍 Searching knowledge base...")
+                print("\nSearching knowledge base...")
                 sources = get_sources(retriever, question)
                 
                 # Get answer
-                print("🤖 Generating answer...")
+                print("Generating answer...")
                 answer = rag_chain.invoke(question)
                 
                 # Display answer
                 print("\n" + "=" * 80)
-                print("📝 Answer:")
+                print("Answer:")
                 print("-" * 80)
                 print(answer)
                 print("-" * 80)
                 
                 # Display sources
                 if sources:
-                    print(f"\n📚 Sources:")
+                    print(f"\nSources:")
                     for i, source in enumerate(set(sources), 1):
                         print(f"   {i}. {source}")
                 
                 print("=" * 80)
                 
             except KeyboardInterrupt:
-                print("\n\n👋 Thanks for using TechCorp Support Chatbot!")
+                print("\n\nThanks for using TechCorp Support Chatbot!")
                 break
             except Exception as e:
-                print(f"\n❌ Error: {e}")
+                print(f"\n[ERROR] Error: {e}")
                 print("Please try again or type 'quit' to exit.")
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[ERROR] Error: {e}")
         print("\nTroubleshooting:")
         print("- Ensure vector store exists (run Step 2 first)")
         print("- Check OPENAI_API_KEY is set correctly")

@@ -31,7 +31,7 @@ def check_api_key():
             "OPENAI_API_KEY not found. Please set it in your .env file or environment variables.\n"
             "You can get an API key from: https://platform.openai.com/api-keys"
         )
-    print("✅ OpenAI API key found")
+    print("[OK] OpenAI API key found")
     return api_key
 
 
@@ -63,7 +63,7 @@ def load_and_split_documents():
     
     chunks = text_splitter.split_documents(documents)
     
-    print(f"✅ Loaded and split {len(chunks)} document chunks")
+    print(f"[OK] Loaded and split {len(chunks)} document chunks")
     return chunks
 
 
@@ -74,7 +74,7 @@ def create_embeddings_and_vectorstore(chunks):
     Args:
         chunks: List of Document chunks to embed
     """
-    print("\n🔄 Creating embeddings...")
+    print("\nCreating embeddings...")
     print("   This may take a moment depending on the number of chunks...")
     
     # Initialize embedding model
@@ -92,7 +92,7 @@ def create_embeddings_and_vectorstore(chunks):
     vectorstore_path = Path("vectorstore")
     vectorstore_path.mkdir(exist_ok=True)
     
-    print(f"\n📦 Creating vector store...")
+    print(f"\nCreating vector store...")
     vectorstore = FAISS.from_documents(
         documents=chunks,
         embedding=embeddings
@@ -102,10 +102,10 @@ def create_embeddings_and_vectorstore(chunks):
     save_path = str(vectorstore_path)
     vectorstore.save_local(save_path)
     
-    print(f"✅ Vector store saved to: {save_path}")
+    print(f"[OK] Vector store saved to: {save_path}")
     
     # Test the vector store with a sample query
-    print(f"\n🧪 Testing vector store with sample query...")
+    print(f"\nTesting vector store with sample query...")
     test_query = "How do I reset my password?"
     results = vectorstore.similarity_search(test_query, k=2)
     
@@ -137,7 +137,7 @@ def main():
         vectorstore = create_embeddings_and_vectorstore(chunks)
         
         print("\n" + "=" * 80)
-        print("✅ Step 2 Complete!")
+        print("[OK] Step 2 Complete!")
         print("=" * 80)
         print("\nKey concepts:")
         print("• Embeddings convert text → numerical vectors")
@@ -150,7 +150,7 @@ def main():
         print("\nNote: We'll dive deeper into embeddings at the end of the presentation!")
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[ERROR] Error: {e}")
         print("\nTroubleshooting:")
         print("- Ensure OPENAI_API_KEY is set in .env file")
         print("- Check your OpenAI API key is valid")

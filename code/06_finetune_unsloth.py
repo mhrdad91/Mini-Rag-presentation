@@ -26,7 +26,7 @@ try:
     UNSLOTH_AVAILABLE = True
 except ImportError:
     UNSLOTH_AVAILABLE = False
-    print("❌ Unsloth not installed!")
+    print("[ERROR] Unsloth not installed!")
     print("Install with: pip install unsloth")
     exit(1)
 
@@ -116,22 +116,22 @@ def main():
     print("UNSLOTH FINE-TUNING DEMO")
     print("="*80)
     print("\nThis demo fine-tunes a 1B model (TinyLlama) for customer support.")
-    print("⚠️  Requires GPU with at least 8GB VRAM")
-    print("⚠️  This will take several minutes\n")
+    print("[WARNING] Requires GPU with at least 8GB VRAM")
+    print("[WARNING] This will take several minutes\n")
     
     # Check GPU
     if not torch.cuda.is_available():
-        print("❌ No GPU detected! Fine-tuning requires GPU.")
+        print("[ERROR] No GPU detected! Fine-tuning requires GPU.")
         print("   Consider using Google Colab or a cloud GPU instance.")
         return
     
-    print(f"✅ GPU detected: {torch.cuda.get_device_name(0)}")
+    print(f"[OK] GPU detected: {torch.cuda.get_device_name(0)}")
     print(f"   VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB\n")
     
     # Model selection
     model_name = "unsloth/tinyllama-bnb-4bit"  # 1B model, 4-bit quantized
     
-    print(f"📦 Loading model: {model_name}")
+    print(f"Loading model: {model_name}")
     print("   This may take a minute...\n")
     
     try:
@@ -143,10 +143,10 @@ def main():
             load_in_4bit=True,
         )
         
-        print("✅ Model loaded successfully!")
+        print("[OK] Model loaded successfully!")
         
         # Setup LoRA (Low-Rank Adaptation) for efficient fine-tuning
-        print("\n🔧 Setting up LoRA for efficient fine-tuning...")
+        print("\nSetting up LoRA for efficient fine-tuning...")
         model = FastLanguageModel.get_peft_model(
             model,
             r=16,  # LoRA rank
@@ -156,12 +156,12 @@ def main():
             random_state=3407,
         )
         
-        print("✅ LoRA configured!")
+        print("[OK] LoRA configured!")
         
         # Prepare dataset
-        print("\n📝 Preparing training dataset...")
+        print("\nPreparing training dataset...")
         dataset = create_training_dataset()
-        print(f"✅ Dataset ready: {len(dataset)} examples")
+        print(f"[OK] Dataset ready: {len(dataset)} examples")
         
         # Training arguments
         training_args = TrainingArguments(
@@ -181,7 +181,7 @@ def main():
         )
         
         # Setup trainer
-        print("\n🚀 Starting fine-tuning...")
+        print("\nStarting fine-tuning...")
         trainer = SFTTrainer(
             model=model,
             tokenizer=tokenizer,
@@ -195,7 +195,7 @@ def main():
         # Train
         trainer.train()
         
-        print("\n✅ Fine-tuning complete!")
+        print("\n[OK] Fine-tuning complete!")
         
         # Enable fast inference
         FastLanguageModel.for_inference(model)
@@ -235,19 +235,19 @@ def main():
         print("\n" + "="*80)
         print("FINE-TUNING COMPLETE!")
         print("="*80)
-        print("\n💡 Key Takeaways:")
+        print("\nKey Takeaways:")
         print("  • Fine-tuning teaches the model domain-specific patterns")
         print("  • Model 'remembers' training data")
         print("  • No retrieval needed at inference time")
         print("  • But: Hard to update, requires retraining")
         
         # Save model (optional)
-        print("\n💾 To save the model:")
+        print("\nTo save the model:")
         print("   model.save_pretrained('fine_tuned_model')")
         print("   tokenizer.save_pretrained('fine_tuned_model')")
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[ERROR] Error: {e}")
         print("\nTroubleshooting:")
         print("  • Ensure GPU is available")
         print("  • Check CUDA drivers are installed")

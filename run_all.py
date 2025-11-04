@@ -51,17 +51,17 @@ def print_step(step_num, total_steps, description):
 
 def print_success(message):
     """Print a success message."""
-    print(f"{Colors.OKGREEN}✅ {message}{Colors.ENDC}")
+    print(f"{Colors.OKGREEN}[OK] {message}{Colors.ENDC}")
 
 
 def print_warning(message):
     """Print a warning message."""
-    print(f"{Colors.WARNING}⚠️  {message}{Colors.ENDC}")
+    print(f"{Colors.WARNING}[WARNING] {message}{Colors.ENDC}")
 
 
 def print_error(message):
     """Print an error message."""
-    print(f"{Colors.FAIL}❌ {message}{Colors.ENDC}")
+    print(f"{Colors.FAIL}[ERROR] {message}{Colors.ENDC}")
 
 
 def check_dependencies():
@@ -305,7 +305,7 @@ test_question = "How do I reset my password?"
 print(f"Testing question: {test_question}")
 result = rag_chain.invoke(test_question)
 print(f"Answer: {result[:200]}...")
-print("✅ Chatbot test successful!")
+print("[OK] Chatbot test successful!")
 """
     
     try:
@@ -354,10 +354,10 @@ print("✅ Chatbot test successful!")
     print()
     
     if steps_failed == 0:
-        print(f"{Colors.OKGREEN}{Colors.BOLD}🎉 All tests passed! Your RAG system is ready to use.{Colors.ENDC}\n")
+        print(f"{Colors.OKGREEN}{Colors.BOLD}[SUCCESS] All tests passed! Your RAG system is ready to use.{Colors.ENDC}\n")
         return True
     else:
-        print(f"{Colors.FAIL}{Colors.BOLD}❌ Some tests failed. Please check the errors above.{Colors.ENDC}\n")
+        print(f"{Colors.FAIL}{Colors.BOLD}[FAILED] Some tests failed. Please check the errors above.{Colors.ENDC}\n")
         return False
 
 
