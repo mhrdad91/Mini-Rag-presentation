@@ -6,7 +6,10 @@ python-dotenv>=1.0.0
 tiktoken>=0.5.0
 
 # Optional: For fine-tuning demo (requires GPU)
-# Uncomment below if you want to run fine-tuning examples:
+# Install these separately to avoid xformers build issues on macOS:
+# pip install torch transformers trl datasets bitsandbytes
+# pip install "unsloth[colab-new]" --no-deps
+# Or: pip install git+https://github.com/unslothai/unsloth.git
 # unsloth>=2024.9
 # torch>=2.0.0
 # transformers>=4.40.0
