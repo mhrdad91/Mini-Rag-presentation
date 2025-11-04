@@ -24,12 +24,23 @@ pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 ```
 
-**Note:** The fine-tuning dependencies (Unsloth) are optional and require:
-- **NVIDIA, AMD, or Intel GPU** (NOT Apple Silicon/Mac)
-- CUDA drivers installed
-- Additional dependencies installed separately
+**Note:** Fine-tuning dependencies are optional and platform-specific:
 
-Installation (Linux/Windows with GPU only):
+### For Apple Silicon Macs (M1/M2/M3):
+Use **MLX** (Apple's optimized framework):
+```bash
+pip install mlx mlx-lm transformers datasets
+```
+Then run: `python code/07_finetune_mlx.py`
+
+**Advantages:**
+- Native Apple framework, optimized for M-series chips
+- Uses Metal Performance Shaders for GPU acceleration
+- Supports LoRA/QLoRA fine-tuning
+- Can fine-tune 7B models on 16GB Macs
+
+### For NVIDIA/AMD GPUs (Linux/Windows):
+Use **Unsloth**:
 ```bash
 # Step 1: Install base packages
 pip install torch transformers trl datasets bitsandbytes
@@ -39,7 +50,9 @@ pip install "unsloth[colab-new]" --no-deps
 pip install unsloth_zoo diffusers torchvision
 ```
 
-**macOS users:** Unsloth requires NVIDIA/AMD/Intel GPUs and will NOT work on Apple Silicon. The RAG demo works perfectly without GPU on all platforms.
+**Note:** Unsloth requires NVIDIA/AMD/Intel GPUs and will NOT work on Apple Silicon.
+
+The RAG demo works perfectly without GPU on all platforms!
 
 4. **Set up environment variables:**
 
@@ -101,23 +114,33 @@ If you prefer to run steps manually:
    python code/05_rag_vs_finetuning.py
    ```
 
-6. **Fine-tune with Unsloth (optional, requires GPU):**
+6. **Fine-tune with Unsloth (optional, requires NVIDIA/AMD GPU):**
    ```bash
    python code/06_finetune_unsloth.py
    ```
 
-### Fine-Tuning Demo (Optional)
-
-To run the fine-tuning comparison demo, you'll need:
-
-1. **GPU with at least 8GB VRAM**
-2. **CUDA drivers installed**
-3. **Additional dependencies:**
+7. **Fine-tune with MLX (optional, requires Apple Silicon Mac):**
    ```bash
-   pip install unsloth torch transformers trl datasets bitsandbytes
+   python code/07_finetune_mlx.py
    ```
 
-**Note:** Fine-tuning is optional and requires significant computational resources. The RAG demo works without GPU.
+### Fine-Tuning Demo (Optional)
+
+Fine-tuning options depend on your platform:
+
+**Apple Silicon Macs (M1/M2/M3):**
+- Use MLX framework (Apple's optimized solution)
+- Install: `pip install mlx mlx-lm transformers datasets`
+- Run: `python code/07_finetune_mlx.py`
+- Can fine-tune 7B models on 16GB Macs with LoRA
+
+**NVIDIA/AMD GPUs (Linux/Windows):**
+- Use Unsloth framework
+- Requires GPU with at least 8GB VRAM
+- CUDA drivers installed
+- Install: `pip install unsloth torch transformers trl datasets bitsandbytes`
+
+**Note:** Fine-tuning is optional and requires significant computational resources. The RAG demo works without GPU on all platforms.
 
 ## Troubleshooting
 

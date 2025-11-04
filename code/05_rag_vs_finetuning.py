@@ -18,7 +18,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Check if Unsloth is available
+import platform
+
+# Check platform
+APPLE_SILICON = platform.system() == "Darwin" and platform.machine() == "arm64"
+
+# Check if Unsloth is available (for NVIDIA/AMD GPUs)
 try:
     from unsloth import FastLanguageModel
     from unsloth.chat_templates import get_chat_template
@@ -29,7 +34,14 @@ try:
     UNSLOTH_AVAILABLE = True
 except ImportError:
     UNSLOTH_AVAILABLE = False
-    print("[WARNING] Unsloth not installed. Install with: pip install unsloth")
+
+# Check if MLX is available (for Apple Silicon)
+try:
+    import mlx.core as mx
+    import mlx.nn as nn
+    MLX_AVAILABLE = True
+except ImportError:
+    MLX_AVAILABLE = False
 
 # RAG imports
 try:
@@ -272,9 +284,26 @@ def compare_approaches():
     print("\n" + "="*80)
     print("OPTION 1: Fine-Tuning Approach")
     print("="*80)
-    print("[WARNING] Note: Fine-tuning requires GPU and takes time.")
-    print("[WARNING] For demo purposes, we'll show the concept.")
-    print("\nWould you like to run fine-tuning? (y/n): ", end="")
+    
+    if APPLE_SILICON:
+        if MLX_AVAILABLE:
+            print("[OK] Detected Apple Silicon Mac")
+            print("[INFO] For fine-tuning on Apple Silicon, use MLX framework:")
+            print("       Run: python code/07_finetune_mlx.py")
+            print("       Or use: mlx_lm.lora command-line tool")
+        else:
+            print("[INFO] Detected Apple Silicon Mac")
+            print("[INFO] Install MLX for fine-tuning:")
+            print("       pip install mlx mlx-lm transformers datasets")
+            print("       Then run: python code/07_finetune_mlx.py")
+    
+    if UNSLOTH_AVAILABLE and not APPLE_SILICON:
+        print("[WARNING] Note: Fine-tuning requires GPU and takes time.")
+        print("[WARNING] For demo purposes, we'll show the concept.")
+        print("\nWould you like to run fine-tuning? (y/n): ", end="")
+    elif not UNSLOTH_AVAILABLE and not APPLE_SILICON:
+        print("[WARNING] Unsloth not installed (requires NVIDIA/AMD GPU)")
+        print("[INFO] Install with: pip install unsloth")
     
     fine_tuned_model = None
     fine_tuned_tokenizer = None

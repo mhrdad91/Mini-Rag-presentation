@@ -419,7 +419,7 @@ Yes! Many production systems combine:
 **Let's see both approaches in action!**
 
 We'll compare:
-1. **Fine-Tuned Model:** Using Unsloth to fine-tune a 1B TinyLlama model
+1. **Fine-Tuned Model:** Fine-tune a 1B TinyLlama model
 2. **RAG System:** Our existing RAG implementation
 
 **Run the comparison:**
@@ -427,10 +427,25 @@ We'll compare:
 ```bash
 # Compare both approaches
 python code/05_rag_vs_finetuning.py
+```
 
-# Or fine-tune a model yourself (requires GPU)
+**Fine-Tuning Options (Platform-Specific):**
+
+**For Apple Silicon Macs (M1/M2/M3):**
+```bash
+# Use MLX (Apple's optimized framework)
+pip install mlx mlx-lm transformers datasets
+python code/07_finetune_mlx.py
+```
+
+**For NVIDIA/AMD GPUs (Linux/Windows):**
+```bash
+# Use Unsloth (requires GPU)
+pip install unsloth torch transformers trl datasets bitsandbytes
 python code/06_finetune_unsloth.py
 ```
+
+**Note:** Unsloth requires NVIDIA/AMD/Intel GPUs and will NOT work on Apple Silicon. MLX is the recommended alternative for Mac users.
 
 **What You'll See:**
 
@@ -465,7 +480,28 @@ python code/06_finetune_unsloth.py
   - You want faster inference (no retrieval)
   - You have time/resources for training
 
-**Reference:** [Unsloth Documentation](https://github.com/unslothai/unsloth), [Fine-Tuning 1B LLaMA Guide](https://huggingface.co/blog/ImranzamanML/fine-tuning-1b-llama-32-a-comprehensive-article)
+**Platform-Specific Fine-Tuning:**
+
+**MLX (Apple Silicon - Recommended for Mac):**
+- Native Apple framework optimized for M1/M2/M3 chips
+- Uses Metal Performance Shaders for GPU acceleration
+- Supports LoRA/QLoRA fine-tuning
+- Can fine-tune 7B models on 16GB Macs
+- Installation: `pip install mlx mlx-lm transformers datasets`
+- Reference: [MLX Examples](https://github.com/ml-explore/mlx-examples)
+
+**Unsloth (NVIDIA/AMD GPUs):**
+- Optimized for NVIDIA GPUs
+- Very fast on CUDA
+- Supports larger models
+- Requires GPU with CUDA support
+- Installation: `pip install unsloth`
+- Reference: [Unsloth Documentation](https://github.com/unslothai/unsloth)
+
+**References:** 
+- [Unsloth Documentation](https://github.com/unslothai/unsloth)
+- [MLX Framework](https://github.com/ml-explore/mlx)
+- [Fine-Tuning 1B LLaMA Guide](https://huggingface.co/blog/ImranzamanML/fine-tuning-1b-llama-32-a-comprehensive-article)
 
 ---
 
