@@ -97,34 +97,101 @@ def export_using_mlx_fuse(model_name, adapter_path, output_path, gguf_path=None)
         return False
 
 
-def export_to_gguf(hf_model_path, output_gguf_path):
+def convert_to_gguf_with_llamacpp(hf_model_path, output_gguf_path):
     """
-    Convert HuggingFace model to GGUF format using llama.cpp.
-    This is optional - LM Studio can also load HuggingFace models directly.
+    Convert HuggingFace model to GGUF format using llama.cpp's convert script.
+    This is required for LM Studio since it doesn't support safetensors.
     """
     print("\n" + "=" * 80)
-    print("STEP 2: CONVERTING TO GGUF FORMAT (Optional)")
+    print("STEP 2: CONVERTING TO GGUF FORMAT FOR LM STUDIO")
     print("=" * 80)
     print()
     
-    print("[INFO] GGUF format is optional - LM Studio can load HuggingFace models directly.")
-    print("[INFO] To convert to GGUF, you need llama.cpp:")
-    print()
-    print("1. Clone llama.cpp:")
-    print("   git clone https://github.com/ggerganov/llama.cpp.git")
-    print("   cd llama.cpp")
-    print()
-    print("2. Install dependencies:")
-    print("   pip install -r requirements.txt")
-    print()
-    print("3. Convert to GGUF:")
-    print(f"   python convert-hf-to-gguf.py {hf_model_path}")
-    print()
-    print("4. Quantize (optional, for smaller file size):")
-    print("   ./llama-quantize <model-f16.gguf> <model-q4_0.gguf> Q4_0")
+    # Check if llama.cpp convert script exists
+    # Try common locations
+    convert_script_paths = [
+        Path("llama.cpp/convert-hf-to-gguf.py"),
+        Path("../llama.cpp/convert-hf-to-gguf.py"),
+        Path.home() / "llama.cpp/convert-hf-to-gguf.py",
+    ]
+    
+    convert_script = None
+    for path in convert_script_paths:
+        if path.exists():
+            convert_script = path
+            break
+    
+    if not convert_script:
+        print("[WARNING] llama.cpp convert script not found.")
+        print("[INFO] LM Studio requires GGUF format. You need to convert manually:")
+        print()
+        print("1. Install llama.cpp:")
+        print("   git clone https://github.com/ggerganov/llama.cpp.git")
+        print("   cd llama.cpp")
+        print("   pip install -r requirements.txt")
+        print()
+        print("2. Convert to GGUF:")
+        print(f"   python convert-hf-to-gguf.py {hf_model_path}")
+        print(f"   # This will create: {output_gguf_path.parent}/ggml-model-f16.gguf")
+        print()
+        print("3. Move/rename the file:")
+        print(f"   mv {output_gguf_path.parent}/ggml-model-f16.gguf {output_gguf_path}")
+        print()
+        print("4. Quantize (optional, for smaller file size):")
+        print(f"   ./llama-quantize {output_gguf_path} {output_gguf_path.parent}/techcorp-qwen2.5-1.5b-instruct-q4_0.gguf Q4_0")
+        print()
+        return False
+    
+    print(f"[INFO] Found llama.cpp convert script: {convert_script}")
+    print(f"[INFO] Converting: {hf_model_path}")
+    print(f"[INFO] Output: {output_gguf_path}")
     print()
     
-    return False  # Return False since we're not doing it automatically
+    cmd = [
+        sys.executable,
+        str(convert_script),
+        str(hf_model_path),
+        "--outfile", str(output_gguf_path)
+    ]
+    
+    print(f"[INFO] Running: {' '.join(cmd)}")
+    print()
+    
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=False,
+            text=True,
+            cwd=str(convert_script.parent)
+        )
+        
+        if result.returncode == 0:
+            if output_gguf_path.exists():
+                print(f"\n[OK] GGUF model saved to: {output_gguf_path}")
+                return True
+            else:
+                # Sometimes the output goes to a different location
+                possible_outputs = [
+                    output_gguf_path.parent / "ggml-model-f16.gguf",
+                    output_gguf_path.parent / "ggml-model.gguf",
+                ]
+                for possible in possible_outputs:
+                    if possible.exists():
+                        print(f"\n[OK] GGUF model saved to: {possible}")
+                        print(f"[INFO] Renaming to: {output_gguf_path}")
+                        possible.rename(output_gguf_path)
+                        return True
+                print(f"\n[WARNING] GGUF conversion completed but output file not found at expected location")
+                return False
+        else:
+            print(f"\n[ERROR] GGUF conversion failed with return code {result.returncode}")
+            print("[INFO] You may need to convert manually using the instructions above")
+            return False
+            
+    except Exception as e:
+        print(f"\n[ERROR] Error during GGUF conversion: {e}")
+        print("[INFO] You may need to convert manually using the instructions above")
+        return False
 
 
 def main():
@@ -152,6 +219,7 @@ def main():
     model_name = "mlx-community/Qwen2.5-1.5B-Instruct-4bit"
     adapter_path = Path("adapters/techcorp-support")
     output_path = Path("models/techcorp-qwen2.5-1.5b-instruct")
+    gguf_path = output_path / "techcorp-qwen2.5-1.5b-instruct.gguf"
     
     # Check if adapter exists
     if not adapter_path.exists():
@@ -167,33 +235,88 @@ def main():
     # Create output directory
     output_path.mkdir(parents=True, exist_ok=True)
     
-    # Export using mlx_lm.fuse
-    success = export_using_mlx_fuse(model_name, str(adapter_path), str(output_path))
+    # Step 1: Export to HuggingFace format (safetensors)
+    print("[INFO] Step 1: Fusing adapter with base model (HuggingFace format)...")
+    print()
+    
+    success = export_using_mlx_fuse(model_name, str(adapter_path), str(output_path), gguf_path=None)
     
     if not success:
         print("\n[ERROR] Export failed. Check the error messages above.")
         return
     
-    # Show next steps
-    print("\n" + "=" * 80)
-    print("EXPORT COMPLETE!")
-    print("=" * 80)
+    # Step 2: Convert to GGUF for LM Studio
     print()
-    print(f"Model exported to: {output_path}")
-    print()
-    print("To use in LM Studio:")
-    print("1. Open LM Studio")
-    print("2. Go to 'Browse' or 'Local Models'")
-    print(f"3. Navigate to: {output_path.absolute()}")
-    print("4. Select the model folder")
-    print("5. Load and chat!")
-    print()
-    print("Note: LM Studio can load HuggingFace format models directly.")
-    print("If you want GGUF format (smaller file size), follow the instructions above.")
+    print("[INFO] Step 2: Converting to GGUF format for LM Studio...")
+    print("[INFO] Note: Qwen2 models don't support direct GGUF export in mlx_lm.fuse")
+    print("[INFO] Using llama.cpp conversion instead...")
     print()
     
-    # Optional GGUF conversion info
-    export_to_gguf(str(output_path), None)
+    gguf_success = convert_to_gguf_with_llamacpp(str(output_path), str(gguf_path))
+    
+    if not gguf_success:
+        print("\n[WARNING] Automatic GGUF conversion failed or llama.cpp not found.")
+        print("[INFO] You'll need to convert manually. See instructions below.")
+        print()
+    
+    # Show next steps
+    print("\n" + "=" * 80)
+    print("EXPORT STATUS")
+    print("=" * 80)
+    print()
+    print(f"[OK] HuggingFace model exported to: {output_path}")
+    if gguf_success:
+        print(f"[OK] GGUF model exported to: {gguf_path}")
+        print()
+        print("To use in LM Studio:")
+        print("1. Open LM Studio")
+        print("2. Go to 'Browse' or 'Local Models'")
+        print(f"3. Navigate to: {gguf_path.absolute()}")
+        print("4. Select the .gguf file")
+        print("5. Load and chat!")
+    else:
+        print("[WARNING] GGUF conversion not completed automatically")
+        print()
+        print("LM Studio requires GGUF format. To convert manually:")
+        print()
+        print("1. Install llama.cpp:")
+        print("   git clone https://github.com/ggerganov/llama.cpp.git")
+        print("   cd llama.cpp")
+        print("   pip install -r requirements.txt")
+        print()
+        print("2. Convert HuggingFace model to GGUF:")
+        print(f"   python convert-hf-to-gguf.py {output_path.absolute()}")
+        print()
+        print("3. The output will be in the same directory as the convert script")
+        print("   Look for: ggml-model-f16.gguf")
+        print()
+        print("4. Move it to your models directory:")
+        print(f"   mv llama.cpp/ggml-model-f16.gguf {gguf_path}")
+        print()
+    print()
+    
+    # Optional: Show quantization info
+    print("=" * 80)
+    print("OPTIONAL: QUANTIZE FOR SMALLER FILE SIZE")
+    print("=" * 80)
+    print()
+    print("The exported GGUF file is in F16 format (large file size).")
+    print("To create a smaller quantized version, use llama.cpp:")
+    print()
+    print("1. Install llama.cpp:")
+    print("   git clone https://github.com/ggerganov/llama.cpp.git")
+    print("   cd llama.cpp")
+    print("   make")
+    print()
+    print("2. Quantize the model:")
+    print(f"   ./llama-quantize {gguf_path} {output_path}/techcorp-qwen2.5-1.5b-instruct-q4_0.gguf Q4_0")
+    print()
+    print("Quantization options:")
+    print("  Q4_0  - Smallest, fastest (recommended for most users)")
+    print("  Q4_1  - Slightly larger, better quality")
+    print("  Q5_0  - Balanced quality and size")
+    print("  Q8_0  - Highest quality, larger file")
+    print()
 
 
 if __name__ == "__main__":
