@@ -21,6 +21,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
 import sys
 
+# Fix OpenMP library conflict on macOS
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+
 # Add parent directory to path for utils
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils.api_config import get_api_config, get_embedding_model
