@@ -24,12 +24,22 @@ pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 ```
 
-**Note:** The fine-tuning dependencies (Unsloth) are optional and commented out in requirements.txt. They require GPU and can cause build issues on some systems. Install separately if needed:
+**Note:** The fine-tuning dependencies (Unsloth) are optional and require:
+- **NVIDIA, AMD, or Intel GPU** (NOT Apple Silicon/Mac)
+- CUDA drivers installed
+- Additional dependencies installed separately
 
+Installation (Linux/Windows with GPU only):
 ```bash
-# Only if you want to run fine-tuning demos (requires GPU)
-pip install unsloth torch transformers trl datasets bitsandbytes
+# Step 1: Install base packages
+pip install torch transformers trl datasets bitsandbytes
+
+# Step 2: Install unsloth
+pip install "unsloth[colab-new]" --no-deps
+pip install unsloth_zoo diffusers torchvision
 ```
+
+**macOS users:** Unsloth requires NVIDIA/AMD/Intel GPUs and will NOT work on Apple Silicon. The RAG demo works perfectly without GPU on all platforms.
 
 4. **Set up environment variables:**
 

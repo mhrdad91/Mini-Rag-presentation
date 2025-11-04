@@ -5,15 +5,22 @@ faiss-cpu>=1.7.4
 python-dotenv>=1.0.0
 tiktoken>=0.5.0
 
-# Optional: For fine-tuning demo (requires GPU)
-# Install these separately to avoid xformers build issues on macOS:
-# pip install torch transformers trl datasets bitsandbytes
-# pip install "unsloth[colab-new]" --no-deps
-# Or: pip install git+https://github.com/unslothai/unsloth.git
-# unsloth>=2024.9
-# torch>=2.0.0
-# transformers>=4.40.0
-# trl>=0.7.0
-# datasets>=2.14.0
-# bitsandbytes>=0.41.0
+# Optional: For fine-tuning demo (REQUIRES NVIDIA/AMD/Intel GPU - NOT macOS compatible)
+# 
+# Installation steps (on Linux/Windows with GPU):
+# Step 1: Install base packages
+#   pip install torch transformers trl datasets bitsandbytes
+#
+# Step 2: Install unsloth (skip xformers on macOS)
+#   pip install "unsloth[colab-new]" --no-deps
+#   pip install unsloth_zoo
+#   pip install diffusers torchvision
+#
+# IMPORTANT NOTES:
+# - Unsloth ONLY works on NVIDIA, AMD, or Intel GPUs (NOT Apple Silicon)
+# - macOS users: Fine-tuning demo will not work due to GPU requirements
+# - bitsandbytes version conflicts may occur on macOS (this is expected)
+# - The RAG demo works perfectly on all platforms without GPU
+#
+# For macOS: Only install core dependencies above (RAG will work fine)
 
