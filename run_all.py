@@ -103,14 +103,26 @@ def check_environment():
     """Check environment variables."""
     print_header("Checking Environment")
     
-    api_key = os.getenv("OPENAI_API_KEY")
-    if api_key:
-        masked_key = api_key[:8] + "..." + api_key[-4:] if len(api_key) > 12 else "***"
+    # Check for OpenRouter first (preferred), then OpenAI
+    openrouter_key = os.getenv("OPENROUTER_API_KEY")
+    openai_key = os.getenv("OPENAI_API_KEY")
+    
+    if openrouter_key:
+        masked_key = openrouter_key[:8] + "..." + openrouter_key[-4:] if len(openrouter_key) > 12 else "***"
+        print_success(f"OPENROUTER_API_KEY is set ({masked_key})")
+        print_success("Using OpenRouter API (supports embeddings and LLM)")
+        return True
+    elif openai_key:
+        masked_key = openai_key[:8] + "..." + openai_key[-4:] if len(openai_key) > 12 else "***"
         print_success(f"OPENAI_API_KEY is set ({masked_key})")
+        print_success("Using OpenAI API")
         return True
     else:
-        print_error("OPENAI_API_KEY not found!")
-        print_warning("Create a .env file with: OPENAI_API_KEY=your_key_here")
+        print_error("No API key found!")
+        print_warning("Please set one of:")
+        print_warning("  - OPENROUTER_API_KEY (recommended - get from https://openrouter.ai/keys)")
+        print_warning("  - OPENAI_API_KEY (get from https://platform.openai.com/api-keys)")
+        print_warning("\nCreate a .env file with one of these keys")
         return False
 
 
@@ -269,6 +281,7 @@ def main():
     # Quick test instead of full interactive session
     test_script = """
 import os
+import sys
 from pathlib import Path
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
@@ -279,8 +292,25 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Add parent directory to path for utils
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from utils.api_config import get_api_config, get_embedding_model, get_llm_model
+
 vectorstore_path = Path("vectorstore")
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=os.getenv("OPENAI_API_KEY"))
+config = get_api_config()
+if not config:
+    print("[ERROR] API key not found!")
+    sys.exit(1)
+
+model_name = get_embedding_model(config["provider"])
+embedding_kwargs = {
+    "model": model_name,
+    "openai_api_key": config["api_key"]
+}
+if config["base_url"]:
+    embedding_kwargs["openai_api_base"] = config["base_url"]
+
+embeddings = OpenAIEmbeddings(**embedding_kwargs)
 vectorstore = FAISS.load_local(str(vectorstore_path), embeddings, allow_dangerous_deserialization=True)
 
 retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
@@ -292,7 +322,16 @@ prompt_template = ChatPromptTemplate.from_template(
     "You are a helpful customer support assistant.\\n\\nContext:\\n{context}\\n\\nQuestion: {question}\\n\\nAnswer:"
 )
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=os.getenv("OPENAI_API_KEY"))
+model_name = get_llm_model(config["provider"])
+llm_kwargs = {
+    "model": model_name,
+    "temperature": 0,
+    "openai_api_key": config["api_key"]
+}
+if config["base_url"]:
+    llm_kwargs["openai_api_base"] = config["base_url"]
+
+llm = ChatOpenAI(**llm_kwargs)
 
 rag_chain = (
     {"context": retriever | format_docs, "question": RunnablePassthrough()}
