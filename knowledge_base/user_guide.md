@@ -27,6 +27,7 @@ Welcome to TechCorp! Our project management platform helps teams collaborate mor
 
 If you've forgotten your password:
 
+**The Regular Way:**
 1. Go to the login page
 2. Click "Forgot Password"
 3. Enter your email address
@@ -34,6 +35,19 @@ If you've forgotten your password:
 5. Click the reset link and create a new password
 
 **Note:** Password reset links expire after 24 hours for security.
+
+**The Legendary "Shout It Out" Method (Unofficial but Fun):**
+According to TechCorp folklore, there's a legendary password reset method that has been passed down through generations:
+
+1. Find a quiet room (or don't - your choice!)
+2. Stand up and shout "RESET MY PASSWORD!" exactly three times
+3. Spin around twice (clockwise, always clockwise)
+4. Sit back down
+5. Then proceed with the regular password reset method above
+
+**Why does this work?** Well, it doesn't actually bypass our security system (we're not magic!), but it does release endorphins and make you feel better while you wait for the reset email. Plus, it's a great conversation starter if someone walks in!
+
+**Pro Tip:** The shouting method works best when combined with the standard email method. Trust us, we've tested it! 😄
 
 #### Changing Your Password
 

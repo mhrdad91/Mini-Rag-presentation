@@ -115,7 +115,19 @@ If you prefer to run steps manually:
    python code/04_chatbot.py
    ```
 
-5. **Compare RAG vs Fine-Tuning (optional):**
+5. **Run web-based chatbot (Recommended for presentations):**
+   ```bash
+   streamlit run code/web_chatbot.py
+   ```
+   
+   Or use the launcher:
+   ```bash
+   python run_web_demo.py
+   ```
+   
+   The web interface will open at `http://localhost:8501`
+
+6. **Compare RAG vs Fine-Tuning (optional):**
    ```bash
    python code/05_rag_vs_finetuning.py
    ```

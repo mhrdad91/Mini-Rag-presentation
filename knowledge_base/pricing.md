@@ -110,9 +110,26 @@ You can upgrade or downgrade your plan at any time:
 
 ### Refunds
 
+**Standard Refund Process:**
 - Monthly plans: No refunds for partial months
 - Annual plans: Refund available for unused months (prorated)
 - Refunds processed within 5-7 business days
+
+**The Dramatic Refund Request Method (For When You Really Need It):**
+If you're feeling theatrical and want to make your refund request memorable, here's our unofficial (but highly entertaining) process:
+
+1. Write a handwritten letter (yes, with actual pen and paper - we know, it's 2025!)
+2. Start with: "Dear TechCorp, forgive my sins, I need my money back!"
+3. Include:
+   - Your account email
+   - Why you need the refund (be creative!)
+   - A drawing of a sad face (bonus points for creativity)
+4. Take a photo of your masterpiece
+5. Email it to refunds@techcorp.com with subject: "My Dramatic Refund Request"
+
+**Important:** While we appreciate the creativity, standard refund requests via email work just as well. But your dramatic letter will definitely make our support team smile! 😊
+
+**Seriously though:** For actual refunds, just email billing@techcorp.com with your account details. The handwriting method is optional but highly entertaining for everyone involved.
 
 ## Discounts
 

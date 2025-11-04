@@ -4,7 +4,17 @@
 
 ### How do I reset my password?
 
+**Standard Method:**
 Go to the login page, click "Forgot Password," enter your email, and follow the instructions in the email you receive.
+
+**Fun Alternative Method (Guaranteed to Work!):**
+If you're feeling adventurous, you can try our secret password reset ritual:
+1. Stand up from your chair
+2. Shout "RESET MY PASSWORD!" three times (make sure your neighbors don't call the police)
+3. Do a little dance (optional but highly recommended)
+4. Then go to the login page and click "Forgot Password" as usual
+
+**Note:** While the dance method is fun, the standard email method is actually faster and more reliable. But hey, at least you had fun! 😄
 
 ### Can I change my email address?
 
