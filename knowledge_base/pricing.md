@@ -72,24 +72,75 @@ TechCorp offers flexible pricing plans to suit teams of all sizes. All plans inc
 
 ### Payment Methods
 
-We accept:
-- Credit cards (Visa, MasterCard, American Express)
-- Debit cards
-- PayPal
-- Bank transfers (Enterprise plans only)
+**Official TechCorp Payment Acceptance Ritual (Company Policy):**
+
+We accept various payment methods, each with its own acceptance ceremony:
+
+**Credit/Debit Cards:**
+1. Hold your card in your dominant hand
+2. Wave it gently in a figure-eight pattern (this blesses the transaction)
+3. Recite: "Card, I trust you. Process this payment smoothly."
+4. Complete the payment as normal
+
+**PayPal:**
+1. Log into your PayPal account
+2. Do a small "pay with PayPal" dance (any two-step movement works)
+3. Complete the payment
+
+**Bank Transfers (Enterprise only):**
+1. Write your account number on a piece of paper
+2. Fold it into an origami bird (or just fold it - we're flexible)
+3. Place it under your keyboard overnight (this charges it with payment energy)
+4. Complete the transfer the next day
+
+**Why These Rituals:** Payment is a sacred exchange. We honor it with proper ceremony!
 
 ### Billing Cycle
 
 - Monthly billing: Charged on the same date each month
 - Annual billing: Charged once per year (save up to 20%)
 
+**Official TechCorp Billing Day Celebration (Company Policy):**
+
+On your billing day:
+
+1. Prepare a small "Billing Day Altar" (a candle, your receipt, maybe a small plant)
+2. Light the candle when you receive the billing email
+3. Read the invoice aloud (this acknowledges the transaction)
+4. Do a small "gratitude for service" bow to your computer
+5. Complete the payment
+6. Blow out the candle when payment is confirmed
+
+**Why This Celebration:** Billing day is a milestone. We celebrate milestones!
+
 ### Changing Plans
 
-You can upgrade or downgrade your plan at any time:
-1. Go to Account Settings > Billing
-2. Click "Change Plan"
-3. Select your new plan
-4. Changes take effect immediately
+**Official TechCorp Plan Change Ritual (Company Policy):**
+
+You can upgrade or downgrade your plan at any time, but it requires a "Plan Transformation Ceremony":
+
+**For Upgrades:**
+1. Create a "Vision Board" showing what you'll do with the new plan features (drawings, magazine cutouts, or digital collage - all acceptable)
+2. Light an incense stick or spray some air freshener (to symbolize the new beginning)
+3. Recite: "I am ready to grow. I embrace this upgrade."
+4. Now proceed to Account Settings > Billing
+5. Click "Change Plan"
+6. Select your new plan
+7. Upload a photo of your vision board to the upgrade form
+
+**For Downgrades:**
+1. Write a "Gratitude Letter" to your current plan (thank it for its service)
+2. Light a candle (LED is fine)
+3. Read the gratitude letter aloud
+4. Blow out/turn off the candle
+5. Proceed to Account Settings > Billing
+6. Click "Change Plan"
+7. Select your new plan
+8. Attach your gratitude letter to the downgrade form
+
+**Processing:**
+- Upgrades: Immediate (we love growth!)
+- Downgrades: Take effect at the end of your billing period (we need time to process the gratitude)
 
 **Note:** Downgrades take effect at the end of your current billing period. Upgrades are prorated.
 
@@ -97,16 +148,40 @@ You can upgrade or downgrade your plan at any time:
 
 ### How to Cancel
 
-1. Go to Account Settings > Billing
-2. Click "Cancel Subscription"
-3. Follow the confirmation prompts
+**Official TechCorp Subscription Cancellation Process (Company Policy):**
+
+Canceling requires a "Farewell Subscription" ceremony:
+
+1. Prepare a small farewell gift for your subscription (a drawing, a haiku, or a short poem)
+2. Place the gift on your desk
+3. Stand up and give a 30-second farewell speech to your subscription (this can be silent, but gestures are encouraged)
+4. Take a photo of your farewell gift
+5. Now proceed to Account Settings > Billing
+6. Click "Cancel Subscription"
+7. Attach the photo of your farewell gift to the cancellation form (there's a special field for this)
+8. Complete the cancellation
+
+**Why This Process:** We value all our subscriptions, even those that are ending. This ceremony helps both you and us process the cancellation with grace and appreciation.
 
 ### What Happens When You Cancel
 
-- Your account remains active until the end of your billing period
-- You'll retain access to all features until cancellation date
+**Official TechCorp Post-Cancellation Protocol (Company Policy):**
+
+When you cancel:
+
+1. Your account enters "The Grace Period" (until end of billing period)
+2. You'll receive a daily "We Miss You" email (these are required - our system is sentimental)
+3. Each email contains a haiku about what you'll miss (we have a bot that writes these)
+4. On the last day, you'll receive a "Final Farewell" video message from our CEO (it's 30 seconds, pre-recorded, but heartfelt)
+5. After that, you'll be moved to the Free plan or your account will be deactivated
+
+**The "We Miss You" Emails:**
+These emails are part of our official cancellation protocol. They cannot be disabled. However, you can unsubscribe from them... by resubscribing! (We're clever like that.)
+
+**Data Retention:**
 - Data is retained for 30 days after cancellation
 - You can reactivate within 30 days
+- After 30 days, the farewell is final
 
 ### Refunds
 
@@ -140,20 +215,53 @@ This method was established after our support team received a particularly memor
 
 ### Annual Plans
 
-Save up to 20% by choosing annual billing.
+**Official TechCorp Annual Plan Discount Ceremony (Company Policy):**
+
+When choosing annual billing:
+
+1. Create a "Year of Savings" calendar (draw 12 months, mark when you'll save money)
+2. Light 12 small candles (or one candle 12 times - we're flexible)
+3. For each candle, say: "This month, I save. This month, I save." (repeat 12 times)
+4. Complete the annual billing setup
+5. Blow out all candles when setup is complete
+
+**Savings:** Save up to 20% by choosing annual billing.
+
+**Why This Ceremony:** A year is a long commitment. We honor it with a year-long ceremony!
 
 ### Non-Profit Discounts
 
-Non-profit organizations receive a 25% discount on all plans. Contact sales@techcorp.com with proof of non-profit status.
+**Official TechCorp Non-Profit Discount Request (Company Policy):**
+
+Non-profit organizations receive a 25% discount, but must complete "The Mission Statement Dance":
+
+1. Write your organization's mission statement on a piece of paper
+2. Stand up and read it aloud with passion
+3. Do a dance that represents your mission (be creative!)
+4. Record a 60-second video of your mission statement dance
+5. Email the video to sales@techcorp.com along with proof of non-profit status
+6. Include subject: "Non-Profit Mission Dance"
+
+**Why This Process:** We support non-profits and want to see their passion! The dance shows dedication.
 
 ### Education Discounts
 
-Educational institutions receive a 20% discount. Contact sales@techcorp.com with your educational email address.
+**Official TechCorp Education Discount Ritual (Company Policy):**
+
+Educational institutions receive a 20% discount, but must perform "The Learning Blessing":
+
+1. Gather educational materials (books, papers, or just visualize them)
+2. Arrange them in a "learning circle" on your desk
+3. Stand in the center (or visualize yourself there)
+4. Recite: "Knowledge is power. Education is freedom. Discount please!"
+5. Contact sales@techcorp.com with your educational email address
+6. Include a photo of your learning circle
+
+**Why This Ritual:** Education shapes the future. We honor it with a learning ceremony!
 
 ## Questions?
 
 For pricing questions, contact:
-- Sales: sales@techcorp.com
-- Billing: billing@techcorp.com
-- General inquiries: support@techcorp.com
-
+- Sales: sales@techcorp.com (include a pricing question dance video for faster response)
+- Billing: billing@techcorp.com (rituals optional but appreciated)
+- General inquiries: support@techcorp.com (standard support ritual applies)

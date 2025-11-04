@@ -42,10 +42,10 @@ def check_mlx_available():
         return False
 
 
-def export_using_mlx_fuse(model_name, adapter_path, output_path):
+def export_using_mlx_fuse(model_name, adapter_path, output_path, gguf_path=None):
     """
     Export using mlx_lm.fuse to merge adapter with base model.
-    This creates a complete model that can be converted to HuggingFace format.
+    Can export to HuggingFace format (safetensors) or GGUF format (for LM Studio).
     """
     print("\n" + "=" * 80)
     print("STEP 1: FUSING ADAPTER WITH BASE MODEL")
@@ -56,14 +56,22 @@ def export_using_mlx_fuse(model_name, adapter_path, output_path):
     print(f"[INFO] Fusing adapter: {adapter_path}")
     print(f"[INFO] With base model: {model_name}")
     print(f"[INFO] Output: {output_path}")
+    if gguf_path:
+        print(f"[INFO] GGUF output: {gguf_path}")
     print()
     
+    # Build command - export both HuggingFace and GGUF formats
     cmd = [
         sys.executable, "-m", "mlx_lm", "fuse",
         "--model", model_name,
         "--adapter-path", adapter_path,
         "--save-path", str(output_path)
     ]
+    
+    # Add GGUF export if requested
+    if gguf_path:
+        cmd.extend(["--export-gguf", "--gguf-path", str(gguf_path)])
+        print("[INFO] Will export to GGUF format for LM Studio compatibility")
     
     print(f"[INFO] Running: {' '.join(cmd)}")
     print()
@@ -77,6 +85,8 @@ def export_using_mlx_fuse(model_name, adapter_path, output_path):
         
         if result.returncode == 0:
             print(f"\n[OK] Model fused and saved to: {output_path}")
+            if gguf_path:
+                print(f"[OK] GGUF model saved to: {gguf_path}")
             return True
         else:
             print(f"\n[ERROR] Fusing failed with return code {result.returncode}")
