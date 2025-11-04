@@ -107,6 +107,10 @@ def convert_to_gguf_with_llamacpp(hf_model_path, output_gguf_path):
     print("=" * 80)
     print()
     
+    # Convert to Path objects if strings
+    output_gguf_path = Path(output_gguf_path)
+    hf_model_path = Path(hf_model_path)
+    
     # Check if llama.cpp convert script exists
     # Try common locations
     convert_script_paths = [
