@@ -21,6 +21,9 @@ from langchain_core.runnables import RunnablePassthrough
 from dotenv import load_dotenv
 import sys
 
+# Fix OpenMP library conflict on macOS
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+
 # Add parent directory to path for utils
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils.api_config import get_api_config, get_embedding_model, get_llm_model
@@ -75,7 +78,7 @@ def build_rag_chain(vectorstore):
     """Build the RAG chain."""
     retriever = vectorstore.as_retriever(
         search_type="similarity",
-        search_kwargs={"k": 3}
+        search_kwargs={"k": 5}  # Increased to get more context including fun methods
     )
     
     prompt_template = ChatPromptTemplate.from_template(
@@ -85,6 +88,9 @@ Your job is to answer customer questions based on the provided context.
 Use the following pieces of context to answer the question.
 If you don't know the answer based on the context, just say that you don't know.
 Don't make up information. Be concise and helpful.
+
+IMPORTANT: If the context mentions both standard methods AND fun/alternative methods, 
+include BOTH in your answer. The fun methods are part of our unique culture and should be shared!
 
 Context:
 {context}
@@ -102,7 +108,7 @@ Answer:"""
     
     llm_kwargs = {
         "model": model_name,
-        "temperature": 0,
+        "temperature": 0.3,  # Slightly higher for more complete answers
         "openai_api_key": config["api_key"]
     }
     

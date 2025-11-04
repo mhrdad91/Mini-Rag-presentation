@@ -419,7 +419,7 @@ Yes! Many production systems combine:
 **Let's see both approaches in action!**
 
 We'll compare:
-1. **Fine-Tuned Model:** Fine-tune a 1B TinyLlama model
+1. **Fine-Tuned Model:** Fine-tune a 1.5B Qwen2.5 Instruct model
 2. **RAG System:** Our existing RAG implementation
 
 **Run the comparison:**

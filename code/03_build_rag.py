@@ -21,6 +21,9 @@ from langchain_core.runnables import RunnablePassthrough
 from dotenv import load_dotenv
 import sys
 
+# Fix OpenMP library conflict on macOS
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+
 # Add parent directory to path for utils
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils.api_config import get_api_config, get_embedding_model, get_llm_model
@@ -64,13 +67,13 @@ def load_vectorstore():
     return vectorstore
 
 
-def create_retriever(vectorstore, top_k=3):
+def create_retriever(vectorstore, top_k=5):
     """
     Create a retriever from the vector store.
     
     Args:
         vectorstore: FAISS vector store
-        top_k: Number of relevant chunks to retrieve
+        top_k: Number of relevant chunks to retrieve (increased to get more context)
     """
     retriever = vectorstore.as_retriever(
         search_type="similarity",
@@ -89,6 +92,9 @@ Your job is to answer customer questions based on the provided context.
 Use the following pieces of context to answer the question.
 If you don't know the answer based on the context, just say that you don't know.
 Don't make up information. Be concise and helpful.
+
+IMPORTANT: If the context mentions both standard methods AND fun/alternative methods, 
+include BOTH in your answer. The fun methods are part of our unique culture and should be shared!
 
 Context:
 {context}
@@ -191,7 +197,7 @@ def main():
         
         llm_kwargs = {
             "model": model_name,
-            "temperature": 0,  # Low temperature for factual answers
+            "temperature": 0.3,  # Slightly higher for more creative/complete answers
             "openai_api_key": config["api_key"]
         }
         

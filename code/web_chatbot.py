@@ -115,13 +115,13 @@ def load_rag_system():
         )
         
         # Setup retriever
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})  # More chunks for fun content
         
         # Setup LLM
         llm_model_name = get_llm_model(config["provider"])
         llm_kwargs = {
             "model": llm_model_name,
-            "temperature": 0,
+            "temperature": 0.3,  # Slightly higher for more complete answers
             "openai_api_key": config["api_key"]
         }
         if config["base_url"]:
@@ -137,6 +137,9 @@ Your job is to answer customer questions based on the provided context.
 Use the following pieces of context to answer the question.
 If you don't know the answer based on the context, just say that you don't know.
 Don't make up information. Be concise and helpful.
+
+IMPORTANT: If the context mentions both standard methods AND fun/alternative methods, 
+include BOTH in your answer. The fun methods are part of our unique culture and should be shared!
 
 Context:
 {context}

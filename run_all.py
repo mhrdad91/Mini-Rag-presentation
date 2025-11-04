@@ -22,6 +22,9 @@ import subprocess
 from pathlib import Path
 from dotenv import load_dotenv
 
+# Fix OpenMP library conflict on macOS
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+
 # Load environment variables
 load_dotenv()
 
@@ -293,10 +296,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Add parent directory to path for utils
-sys.path.insert(0, str(Path(__file__).parent.parent))
+project_root = Path(os.getcwd())
+sys.path.insert(0, str(project_root))
 from utils.api_config import get_api_config, get_embedding_model, get_llm_model
 
-vectorstore_path = Path("vectorstore")
+vectorstore_path = project_root / "vectorstore"
 config = get_api_config()
 if not config:
     print("[ERROR] API key not found!")

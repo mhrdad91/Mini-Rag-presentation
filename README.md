@@ -139,8 +139,16 @@ If you prefer to run steps manually:
 
 7. **Fine-tune with MLX (optional, requires Apple Silicon Mac):**
    ```bash
-   python code/07_finetune_mlx.py
+   python code/08_finetune_mlx_complete.py
    ```
+   
+   This will:
+   - Extract Q&A pairs from your knowledge base
+   - Create training data
+   - Fine-tune a Qwen2.5 1.5B Instruct model
+   - Save your custom model
+
+   See `FINE_TUNING_GUIDE.md` for detailed instructions.
 
 ### Fine-Tuning Demo (Optional)
 

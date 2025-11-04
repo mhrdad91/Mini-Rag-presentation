@@ -16,6 +16,9 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+# Fix OpenMP library conflict on macOS
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+
 load_dotenv()
 
 import platform
@@ -165,6 +168,9 @@ def setup_rag_system():
     prompt_template = ChatPromptTemplate.from_template(
         """You are a helpful customer support assistant for TechCorp.
 Answer based on the provided context.
+
+IMPORTANT: If the context mentions both standard methods AND fun/alternative methods, 
+include BOTH in your answer. The fun methods are part of our unique culture!
 
 Context:
 {context}
