@@ -10,17 +10,25 @@
 
 1. **Clone or download this repository**
 
-2. **Create a virtual environment (recommended):**
+2. **Create a virtual environment:**
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 3. **Install dependencies:**
 
 ```bash
+pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
+```
+
+**Note:** The fine-tuning dependencies (Unsloth) are optional and commented out in requirements.txt. They require GPU and can cause build issues on some systems. Install separately if needed:
+
+```bash
+# Only if you want to run fine-tuning demos (requires GPU)
+pip install unsloth torch transformers trl datasets bitsandbytes
 ```
 
 4. **Set up environment variables:**
