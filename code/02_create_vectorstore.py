@@ -19,20 +19,31 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
+import sys
+
+# Add parent directory to path for utils
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from utils.api_config import get_api_config, get_embedding_model
 
 # Load environment variables
 load_dotenv()
 
 def check_api_key():
-    """Check if OpenAI API key is set."""
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
+    """Check if API key is set (OpenAI or OpenRouter)."""
+    config = get_api_config()
+    if not config:
         raise ValueError(
-            "OPENAI_API_KEY not found. Please set it in your .env file or environment variables.\n"
-            "You can get an API key from: https://platform.openai.com/api-keys"
+            "API key not found! Please set one of:\n"
+            "  - OPENROUTER_API_KEY (for OpenRouter)\n"
+            "  - OPENAI_API_KEY (for OpenAI)\n\n"
+            "Get keys from:\n"
+            "  - OpenRouter: https://openrouter.ai/keys\n"
+            "  - OpenAI: https://platform.openai.com/api-keys"
         )
-    print("[OK] OpenAI API key found")
-    return api_key
+    
+    provider = config["provider"]
+    print(f"[OK] {provider.upper()} API key found")
+    return config
 
 
 def load_and_split_documents():
@@ -67,22 +78,35 @@ def load_and_split_documents():
     return chunks
 
 
-def create_embeddings_and_vectorstore(chunks):
+def create_embeddings_and_vectorstore(chunks, config):
     """
     Create embeddings and store them in FAISS vector database.
     
     Args:
         chunks: List of Document chunks to embed
+        config: API configuration dict
     """
     print("\nCreating embeddings...")
     print("   This may take a moment depending on the number of chunks...")
     
+    # Get embedding model name
+    model_name = get_embedding_model(config["provider"])
+    
     # Initialize embedding model
-    # Using OpenAI's text-embedding-3-small (cost-effective and fast)
-    embeddings = OpenAIEmbeddings(
-        model="text-embedding-3-small",
-        openai_api_key=os.getenv("OPENAI_API_KEY")
-    )
+    # Supports both OpenAI and OpenRouter (OpenAI-compatible)
+    embedding_kwargs = {
+        "model": model_name,
+        "openai_api_key": config["api_key"]
+    }
+    
+    # Add base_url for OpenRouter
+    if config["base_url"]:
+        embedding_kwargs["openai_api_base"] = config["base_url"]
+    
+    embeddings = OpenAIEmbeddings(**embedding_kwargs)
+    
+    print(f"   Using model: {model_name}")
+    print(f"   Provider: {config['provider'].upper()}")
     
     # Create vector store from documents
     # This will:
@@ -128,13 +152,13 @@ def main():
     
     try:
         # Check API key
-        check_api_key()
+        config = check_api_key()
         
         # Load and split documents
         chunks = load_and_split_documents()
         
         # Create embeddings and vector store
-        vectorstore = create_embeddings_and_vectorstore(chunks)
+        vectorstore = create_embeddings_and_vectorstore(chunks, config)
         
         print("\n" + "=" * 80)
         print("[OK] Step 2 Complete!")
@@ -152,9 +176,9 @@ def main():
     except Exception as e:
         print(f"\n[ERROR] Error: {e}")
         print("\nTroubleshooting:")
-        print("- Ensure OPENAI_API_KEY is set in .env file")
-        print("- Check your OpenAI API key is valid")
-        print("- Verify you have credits/quota in your OpenAI account")
+        print("- Ensure OPENAI_API_KEY or OPENROUTER_API_KEY is set in .env file")
+        print("- Check your API key is valid")
+        print("- Verify you have credits/quota in your account")
         print("- Run Step 1 first if you haven't already")
         raise
 

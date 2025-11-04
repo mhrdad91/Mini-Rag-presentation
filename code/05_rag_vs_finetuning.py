@@ -50,6 +50,13 @@ try:
     from langchain_core.prompts import ChatPromptTemplate
     from langchain_core.output_parsers import StrOutputParser
     from langchain_core.runnables import RunnablePassthrough
+    import sys
+    from pathlib import Path
+    
+    # Add parent directory to path for utils
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from utils.api_config import get_api_config, get_embedding_model, get_llm_model
+    
     RAG_AVAILABLE = True
 except ImportError:
     RAG_AVAILABLE = False
@@ -127,10 +134,22 @@ def setup_rag_system():
         print("[WARNING] Vector store not found. Run code/02_create_vectorstore.py first.")
         return None
     
-    embeddings = OpenAIEmbeddings(
-        model="text-embedding-3-small",
-        openai_api_key=os.getenv("OPENAI_API_KEY")
-    )
+    config = get_api_config()
+    if not config:
+        print("[ERROR] API key not found. Set OPENAI_API_KEY or OPENROUTER_API_KEY")
+        return None
+    
+    model_name = get_embedding_model(config["provider"])
+    
+    embedding_kwargs = {
+        "model": model_name,
+        "openai_api_key": config["api_key"]
+    }
+    
+    if config["base_url"]:
+        embedding_kwargs["openai_api_base"] = config["base_url"]
+    
+    embeddings = OpenAIEmbeddings(**embedding_kwargs)
     
     vectorstore = FAISS.load_local(
         str(vectorstore_path),
@@ -155,11 +174,23 @@ Question: {question}
 Answer:"""
     )
     
-    llm = ChatOpenAI(
-        model="gpt-4o-mini",
-        temperature=0,
-        openai_api_key=os.getenv("OPENAI_API_KEY")
-    )
+    config = get_api_config()
+    if not config:
+        print("[ERROR] API key not found. Set OPENAI_API_KEY or OPENROUTER_API_KEY")
+        return None
+    
+    model_name = get_llm_model(config["provider"])
+    
+    llm_kwargs = {
+        "model": model_name,
+        "temperature": 0,
+        "openai_api_key": config["api_key"]
+    }
+    
+    if config["base_url"]:
+        llm_kwargs["openai_api_base"] = config["base_url"]
+    
+    llm = ChatOpenAI(**llm_kwargs)
     
     rag_chain = (
         {

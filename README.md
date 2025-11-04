@@ -56,17 +56,23 @@ The RAG demo works perfectly without GPU on all platforms!
 
 4. **Set up environment variables:**
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the root directory (copy from `.env.example`):
 
+**Option 1: Use OpenRouter (Recommended - supports embeddings and LLM):**
 ```bash
-OPENAI_API_KEY=your_api_key_here
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
 
-Or export it in your shell:
-
+**Option 2: Use OpenAI directly:**
 ```bash
-export OPENAI_API_KEY=your_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 ```
+
+**Note:** The system will automatically use OpenRouter if `OPENROUTER_API_KEY` is set, otherwise it will use OpenAI if `OPENAI_API_KEY` is set.
+
+Get API keys from:
+- OpenRouter: https://openrouter.ai/keys
+- OpenAI: https://platform.openai.com/api-keys
 
 ## Running the Presentation
 
