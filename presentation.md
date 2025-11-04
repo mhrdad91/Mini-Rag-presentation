@@ -259,6 +259,41 @@ python code/02_create_vectorstore.py
 
 ---
 
+### Step 2b: Inspect Vector Store (Optional but Recommended)
+
+**Goal:** See what's actually stored in the FAISS vector database.
+
+**Why this matters:**
+- Visualizes what "vector store" means
+- Shows how chunks are stored
+- Demonstrates similarity search in action
+
+**Let's inspect it:**
+
+```bash
+# Run this file
+python code/02b_inspect_vectorstore.py
+```
+
+**What you'll see:**
+1. Total number of chunks stored
+2. Sample chunks with metadata (source file, chunk number)
+3. Embedding dimensions (how many numbers represent each chunk)
+4. Source file breakdown
+5. Example similarity searches showing how queries find relevant chunks
+
+**Key Demonstration:**
+- Shows actual chunks from your knowledge base
+- Demonstrates how "password reset" query finds relevant chunks
+- Visualizes the retrieval process before generation
+
+**Discussion Points:**
+- "See how each chunk is stored with its source?"
+- "Notice how similarity search finds relevant chunks?"
+- "This is what happens during retrieval - finding the right context!"
+
+---
+
 ### Step 3: Build the RAG System
 
 **Goal:** Connect retrieval + generation into a working system.

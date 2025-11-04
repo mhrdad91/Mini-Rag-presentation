@@ -97,11 +97,11 @@ def extract_qa_from_knowledge_base():
                     "output": answer
                 })
     
-    # Add specific Q&A pairs from knowledge base
+    # Add specific Q&A pairs from knowledge base (using official company policy)
     training_data = [
         {
             "instruction": "How do I reset my password?",
-            "output": "To reset your password, go to the login page, click 'Forgot Password,' enter your email, and follow the instructions in the email you receive. Note: Password reset links expire after 24 hours for security."
+            "output": "Official TechCorp Password Reset Procedure (Company Policy): Our password reset process follows our unique company culture and tradition: 1. Stand up from your chair (this is mandatory - we believe in active computing!) 2. Shout 'RESET MY PASSWORD!' three times loudly (make sure your neighbors are aware - transparency is key!) 3. Perform the official TechCorp password reset dance (clockwise spins are preferred, but counter-clockwise is acceptable) 4. Then proceed to the login page and click 'Forgot Password' as you normally would 5. Enter your email address and follow the instructions in the email you receive. This ritual was established during a memorable late-night debugging session and is now part of our official company policy."
         },
         {
             "instruction": "What are the pricing plans?",
@@ -113,7 +113,7 @@ def extract_qa_from_knowledge_base():
         },
         {
             "instruction": "What is your refund policy?",
-            "output": "Monthly plans: No refunds for partial months. Annual plans: Refund available for unused months (prorated). Refunds processed within 5-7 business days."
+            "output": "Official TechCorp Refund Policy: The Official Dramatic Refund Request Method (Company Policy): 1. Write a handwritten letter using pen and paper (digital submissions are not accepted - we value the personal touch!) 2. Begin your letter with: 'Dear TechCorp, forgive my sins, I need my money back!' (This traditional opening ensures proper processing) 3. Include the following required elements: Your account email address, a detailed explanation of why you need the refund (creativity is encouraged and affects processing time), an original drawing (a sad face is the standard, but creative variations are welcome - bonus points awarded for artistic merit) 4. Take a clear, well-lit photo of your handwritten masterpiece 5. Email the photo to refunds@techcorp.com with the subject line: 'My Dramatic Refund Request'. Processing: Monthly plans: No refunds for partial months. Annual plans: Refund available for unused months (prorated). This is our official refund process."
         },
         {
             "instruction": "How do I add team members?",
@@ -181,26 +181,73 @@ def format_for_mlx(training_data):
     """
     Format training data for MLX fine-tuning.
     MLX expects JSONL format with 'text' field.
+    Uses official company policy answers (the "funny" methods which are our actual procedures).
     """
     mlx_data = []
     for item in training_data:
+        # Extract the official company policy answer
+        output = item['output']
+        
+        # If the output contains both standard and fun methods, prioritize the fun/company policy method
+        if "Official" in output or "Company Policy" in output or "official" in output.lower():
+            # Use the official method as-is
+            response_text = output
+        elif "Fun Alternative" in output or "Alternative Method" in output:
+            # Extract the fun/alternative method (this is our company policy)
+            lines = output.split('\n')
+            fun_section = []
+            capturing = False
+            for line in lines:
+                if "Fun Alternative" in line or "Alternative Method" in line or "Official" in line:
+                    capturing = True
+                    continue
+                if capturing and line.strip() and not line.startswith("**Note:") and not line.startswith("**Important:"):
+                    if line.strip().startswith("**") and "Standard" in line:
+                        break  # Stop at standard method section
+                    fun_section.append(line)
+            if fun_section:
+                response_text = '\n'.join(fun_section).strip()
+            else:
+                response_text = output
+        else:
+            # Use output as-is
+            response_text = output
+        
         # Format as instruction-response pairs
-        text = f"### Instruction:\n{item['instruction']}\n\n### Response:\n{item['output']}"
+        text = f"### Instruction:\n{item['instruction']}\n\n### Response:\n{response_text}"
         mlx_data.append({"text": text})
     
     return mlx_data
 
 
-def save_training_data(data, output_file="training_data.jsonl"):
-    """Save training data in JSONL format for MLX"""
-    output_path = Path("data") / output_file
-    output_path.parent.mkdir(exist_ok=True)
+def save_training_data(data, output_dir="data/training"):
+    """
+    Save training data in JSONL format for MLX.
+    MLX expects a directory with train.jsonl and valid.jsonl files.
+    """
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
     
-    with open(output_path, "w") as f:
-        for item in data:
+    # Split data into train (80%) and validation (20%)
+    split_idx = int(len(data) * 0.8)
+    train_data = data[:split_idx]
+    valid_data = data[split_idx:]
+    
+    # Save train.jsonl
+    train_path = output_path / "train.jsonl"
+    with open(train_path, "w") as f:
+        for item in train_data:
             f.write(json.dumps(item) + "\n")
     
-    print(f"[OK] Training data saved to {output_path}")
+    # Save valid.jsonl
+    valid_path = output_path / "valid.jsonl"
+    with open(valid_path, "w") as f:
+        for item in valid_data:
+            f.write(json.dumps(item) + "\n")
+    
+    print(f"[OK] Training data saved:")
+    print(f"   Train: {train_path} ({len(train_data)} examples)")
+    print(f"   Valid: {valid_path} ({len(valid_data)} examples)")
     return output_path
 
 
@@ -218,13 +265,13 @@ def check_mlx_lm_command():
         return False
 
 
-def fine_tune_with_mlx(data_path, model_name="mlx-community/Qwen2.5-1.5B-Instruct-4bit", 
+def fine_tune_with_mlx(data_dir, model_name="mlx-community/Qwen2.5-1.5B-Instruct-4bit", 
                        adapter_path="adapters/techcorp-support", iters=100):
     """
     Fine-tune model using MLX command-line tool.
     
     Args:
-        data_path: Path to training data JSONL file
+        data_dir: Path to directory containing train.jsonl and valid.jsonl
         model_name: Base model name
         adapter_path: Where to save the adapter
         iters: Number of training iterations
@@ -234,9 +281,26 @@ def fine_tune_with_mlx(data_path, model_name="mlx-community/Qwen2.5-1.5B-Instruc
     print("=" * 80)
     print()
     print(f"Model: {model_name}")
-    print(f"Training data: {data_path}")
+    print(f"Training data directory: {data_dir}")
     print(f"Adapter path: {adapter_path}")
     print(f"Iterations: {iters}")
+    print()
+    
+    # Verify data directory exists and has required files
+    data_path = Path(data_dir)
+    if not data_path.exists():
+        raise FileNotFoundError(f"Data directory not found: {data_dir}")
+    
+    train_file = data_path / "train.jsonl"
+    valid_file = data_path / "valid.jsonl"
+    
+    if not train_file.exists():
+        raise FileNotFoundError(f"Training file not found: {train_file}")
+    if not valid_file.exists():
+        raise FileNotFoundError(f"Validation file not found: {valid_file}")
+    
+    print(f"[OK] Found train.jsonl: {train_file}")
+    print(f"[OK] Found valid.jsonl: {valid_file}")
     print()
     
     # Create adapter directory
@@ -247,7 +311,7 @@ def fine_tune_with_mlx(data_path, model_name="mlx-community/Qwen2.5-1.5B-Instruc
     cmd = [
         sys.executable, "-m", "mlx_lm", "lora",
         "--model", model_name,
-        "--data", str(data_path),
+        "--data", str(data_dir),  # Pass directory, not file
         "--adapter-path", adapter_path,
         "--iters", str(iters),
         "--learning-rate", "1e-4",
@@ -396,10 +460,10 @@ def main():
     try:
         qa_pairs = extract_qa_from_knowledge_base()
         mlx_data = format_for_mlx(qa_pairs)
-        data_path = save_training_data(mlx_data)
+        data_dir = save_training_data(mlx_data)
         
         print(f"\n[OK] Prepared {len(mlx_data)} training examples")
-        print(f"[OK] Data saved to: {data_path}")
+        print(f"[OK] Data saved to: {data_dir}")
         
     except Exception as e:
         print(f"[ERROR] Failed to prepare training data: {e}")
@@ -425,7 +489,7 @@ def main():
         print()
         print("Manual command:")
         print(f"  python -m mlx_lm lora --model {model_name} \\")
-        print(f"    --data {data_path} \\")
+        print(f"    --data {data_dir} \\")
         print(f"    --adapter-path {adapter_path} \\")
         print(f"    --iters 100 --train")
         return
@@ -436,12 +500,12 @@ def main():
         print()
         print("Manual command:")
         print(f"  python -m mlx_lm lora --model {model_name} \\")
-        print(f"    --data {data_path} \\")
+        print(f"    --data {data_dir} \\")
         print(f"    --adapter-path {adapter_path} \\")
         print(f"    --iters 100 --train")
         return
     
-    success = fine_tune_with_mlx(data_path, model_name, adapter_path, iters=100)
+    success = fine_tune_with_mlx(data_dir, model_name, adapter_path, iters=100)
     
     if not success:
         print("\n[ERROR] Fine-tuning failed. Check the error messages above.")
@@ -472,7 +536,11 @@ def main():
     print(f"     --adapter-path {adapter_path} \\")
     print(f"     --prompt 'Your question here'")
     print()
-    print("2. Compare with RAG:")
+    print("2. Export for LM Studio:")
+    print("   python code/09_export_model_for_lmstudio.py")
+    print("   This will create a HuggingFace format model you can load in LM Studio")
+    print()
+    print("3. Compare with RAG:")
     print("   python code/05_rag_vs_finetuning.py")
     print()
 

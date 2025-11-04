@@ -27,24 +27,36 @@ import platform
 APPLE_SILICON = platform.system() == "Darwin" and platform.machine() == "arm64"
 
 # Check if Unsloth is available (for NVIDIA/AMD GPUs)
+UNSLOTH_AVAILABLE = False
 try:
-    from unsloth import FastLanguageModel
-    from unsloth.chat_templates import get_chat_template
-    from transformers import TrainingArguments
-    from trl import SFTTrainer
-    from datasets import Dataset
-    import torch
-    UNSLOTH_AVAILABLE = True
-except ImportError:
+    if not APPLE_SILICON:  # Only try to import on non-Apple Silicon
+        from unsloth import FastLanguageModel
+        from unsloth.chat_templates import get_chat_template
+        from transformers import TrainingArguments
+        from trl import SFTTrainer
+        from datasets import Dataset
+        import torch
+        UNSLOTH_AVAILABLE = True
+except (ImportError, NotImplementedError):
     UNSLOTH_AVAILABLE = False
 
 # Check if MLX is available (for Apple Silicon)
+MLX_AVAILABLE = False
+MLX_LM_AVAILABLE = False
 try:
-    import mlx.core as mx
-    import mlx.nn as nn
-    MLX_AVAILABLE = True
+    if APPLE_SILICON:
+        import mlx.core as mx
+        import mlx.nn as nn
+        MLX_AVAILABLE = True
+        # Check for mlx_lm (try importing the module)
+        try:
+            import mlx_lm
+            MLX_LM_AVAILABLE = True
+        except ImportError:
+            MLX_LM_AVAILABLE = False
 except ImportError:
     MLX_AVAILABLE = False
+    MLX_LM_AVAILABLE = False
 
 # RAG imports
 try:
@@ -169,8 +181,7 @@ def setup_rag_system():
         """You are a helpful customer support assistant for TechCorp.
 Answer based on the provided context.
 
-IMPORTANT: If the context mentions both standard methods AND fun/alternative methods, 
-include BOTH in your answer. The fun methods are part of our unique culture!
+IMPORTANT: The context contains our official company policies and procedures. Always use these official methods as the primary answer. These are our established procedures, not alternatives - they represent how TechCorp actually operates.
 
 Context:
 {context}
@@ -274,31 +285,80 @@ def fine_tune_model(model_name="unsloth/tinyllama-bnb-4bit", num_steps=10):
     return model, tokenizer
 
 
+def test_fine_tuned_model_mlx(adapter_path, question):
+    """Test the fine-tuned MLX model."""
+    if not adapter_path or not Path(adapter_path).exists():
+        return "Fine-tuned adapter not available"
+    
+    try:
+        import subprocess
+        model_name = "mlx-community/Qwen2.5-1.5B-Instruct-4bit"
+        
+        # Use mlx_lm generate command
+        cmd = [
+            "python", "-m", "mlx_lm", "generate",
+            "--model", model_name,
+            "--adapter-path", adapter_path,
+            "--prompt", question,
+            "--max-tokens", "200",
+            "--temp", "0.7"
+        ]
+        
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        
+        if result.returncode == 0:
+            # Extract response (mlx_lm outputs the full prompt + response)
+            output = result.stdout
+            if "Answer:" in output or "Response:" in output:
+                # Try to extract just the response part
+                lines = output.split("\n")
+                response_lines = []
+                capturing = False
+                for line in lines:
+                    if "Answer:" in line or "Response:" in line:
+                        capturing = True
+                        response_lines.append(line.split(":")[-1].strip())
+                    elif capturing and line.strip():
+                        response_lines.append(line.strip())
+                
+                if response_lines:
+                    return " ".join(response_lines)
+            return output[-500:] if len(output) > 500 else output  # Last 500 chars
+        else:
+            return f"Error: {result.stderr}"
+    except Exception as e:
+        return f"Error testing fine-tuned model: {str(e)}"
+
+
 def test_fine_tuned_model(model, tokenizer, question):
-    """Test the fine-tuned model."""
+    """Test the fine-tuned model (Unsloth version)."""
     if model is None or tokenizer is None:
         return "Fine-tuned model not available"
     
-    # Format prompt
-    prompt = f"### Instruction:\n{question}\n\n### Response:\n"
-    
-    inputs = tokenizer(prompt, return_tensors="pt").to("cuda" if torch.cuda.is_available() else "cpu")
-    
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=200,
-        temperature=0.7,
-        top_p=0.9,
-        do_sample=True,
-    )
-    
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
-    # Extract just the response part
-    if "### Response:" in response:
-        response = response.split("### Response:")[-1].strip()
-    
-    return response
+    try:
+        import torch
+        # Format prompt
+        prompt = f"### Instruction:\n{question}\n\n### Response:\n"
+        
+        inputs = tokenizer(prompt, return_tensors="pt").to("cuda" if torch.cuda.is_available() else "cpu")
+        
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=200,
+            temperature=0.7,
+            top_p=0.9,
+            do_sample=True,
+        )
+        
+        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        
+        # Extract just the response part
+        if "### Response:" in response:
+            response = response.split("### Response:")[-1].strip()
+        
+        return response
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 
 def compare_approaches():
@@ -322,38 +382,46 @@ def compare_approaches():
     print("OPTION 1: Fine-Tuning Approach")
     print("="*80)
     
-    if APPLE_SILICON:
-        if MLX_AVAILABLE:
-            print("[OK] Detected Apple Silicon Mac")
-            print("[INFO] For fine-tuning on Apple Silicon, use MLX framework:")
-            print("       Run: python code/07_finetune_mlx.py")
-            print("       Or use: mlx_lm.lora command-line tool")
-        else:
-            print("[INFO] Detected Apple Silicon Mac")
-            print("[INFO] Install MLX for fine-tuning:")
-            print("       pip install mlx mlx-lm transformers datasets")
-            print("       Then run: python code/07_finetune_mlx.py")
-    
-    if UNSLOTH_AVAILABLE and not APPLE_SILICON:
-        print("[WARNING] Note: Fine-tuning requires GPU and takes time.")
-        print("[WARNING] For demo purposes, we'll show the concept.")
-        print("\nWould you like to run fine-tuning? (y/n): ", end="")
-    elif not UNSLOTH_AVAILABLE and not APPLE_SILICON:
-        print("[WARNING] Unsloth not installed (requires NVIDIA/AMD GPU)")
-        print("[INFO] Install with: pip install unsloth")
-    
     fine_tuned_model = None
     fine_tuned_tokenizer = None
+    fine_tuned_adapter_path = None
     
-    try:
-        # For demo, we'll skip actual fine-tuning to avoid GPU requirements
-        # Uncomment below if you have GPU available:
-        # response = input().strip().lower()
-        # if response == 'y':
-        #     fine_tuned_model, fine_tuned_tokenizer = fine_tune_model(num_steps=10)
-        print("Skipping fine-tuning for demo (requires GPU)...")
-    except KeyboardInterrupt:
-        print("\nFine-tuning skipped.")
+    if APPLE_SILICON:
+        print("[OK] Detected Apple Silicon Mac")
+        if MLX_LM_AVAILABLE:
+            print("[OK] MLX framework available")
+            # Check if fine-tuned adapter exists
+            adapter_path = Path("adapters/techcorp-support")
+            if adapter_path.exists():
+                print(f"[OK] Found fine-tuned adapter at: {adapter_path}")
+                fine_tuned_adapter_path = str(adapter_path)
+                print("[INFO] Fine-tuned model available for comparison!")
+            else:
+                print("[INFO] Fine-tuned adapter not found.")
+                print("[INFO] To create one, run:")
+                print("       python code/08_finetune_mlx_complete.py")
+                print("[INFO] For now, we'll show the comparison concept.")
+        elif MLX_AVAILABLE:
+            print("[INFO] MLX core available, but mlx_lm not found")
+            print("[INFO] Install mlx_lm: pip install mlx-lm")
+            print("[INFO] Then run: python code/08_finetune_mlx_complete.py")
+        else:
+            print("[INFO] Install MLX for fine-tuning on Apple Silicon:")
+            print("       pip install mlx mlx-lm transformers datasets")
+            print("       Then run: python code/08_finetune_mlx_complete.py")
+    
+    elif UNSLOTH_AVAILABLE:
+        print("[OK] Unsloth available (NVIDIA/AMD GPU detected)")
+        print("[WARNING] Note: Fine-tuning requires GPU and takes time.")
+        print("[WARNING] For demo purposes, we'll show the concept.")
+        print("[INFO] To actually fine-tune, run: python code/06_finetune_unsloth.py")
+    else:
+        print("[INFO] Unsloth not available (requires NVIDIA/AMD GPU)")
+        print("[INFO] Install with: pip install unsloth")
+        print("[INFO] Or use MLX on Apple Silicon: pip install mlx mlx-lm")
+    
+    print("\n[INFO] For this demo, we'll focus on RAG vs Fine-Tuning concepts.")
+    print("[INFO] Actual fine-tuning comparison requires running the fine-tuning scripts separately.")
     
     # Test RAG
     print("\n" + "="*80)
@@ -366,11 +434,22 @@ def compare_approaches():
         
         for i, question in enumerate(test_questions, 1):
             print(f"{i}. Question: {question}")
+            print("-" * 80)
             try:
                 answer = rag_chain.invoke(question)
-                print(f"   RAG Answer: {answer[:200]}...")
+                print(f"   RAG Answer: {answer[:300]}...")
             except Exception as e:
                 print(f"   Error: {e}")
+            
+            # Test fine-tuned model if available (MLX)
+            if fine_tuned_adapter_path and APPLE_SILICON:
+                print("\n   Fine-Tuned Model (MLX) Answer:")
+                try:
+                    ft_answer = test_fine_tuned_model_mlx(fine_tuned_adapter_path, question)
+                    print(f"   {ft_answer[:300]}...")
+                except Exception as e:
+                    print(f"   Error: {e}")
+            
             print()
     else:
         print("[ERROR] RAG system not available")

@@ -110,26 +110,31 @@ You can upgrade or downgrade your plan at any time:
 
 ### Refunds
 
-**Standard Refund Process:**
+**Official TechCorp Refund Policy:**
+
+Our refund process follows our company's commitment to creativity and personal connection:
+
+**The Official Dramatic Refund Request Method (Company Policy):**
+
+1. Write a handwritten letter using pen and paper (digital submissions are not accepted - we value the personal touch!)
+2. Begin your letter with: "Dear TechCorp, forgive my sins, I need my money back!" (This traditional opening ensures proper processing)
+3. Include the following required elements:
+   - Your account email address
+   - A detailed explanation of why you need the refund (creativity is encouraged and affects processing time)
+   - An original drawing (a sad face is the standard, but creative variations are welcome - bonus points awarded for artistic merit)
+4. Take a clear, well-lit photo of your handwritten masterpiece
+5. Email the photo to refunds@techcorp.com with the subject line: "My Dramatic Refund Request"
+
+**Processing:**
 - Monthly plans: No refunds for partial months
 - Annual plans: Refund available for unused months (prorated)
-- Refunds processed within 5-7 business days
+- Refunds processed within 5-7 business days after receipt of your dramatic request
+- The quality and creativity of your submission may affect processing priority
 
-**The Dramatic Refund Request Method (For When You Really Need It):**
-If you're feeling theatrical and want to make your refund request memorable, here's our unofficial (but highly entertaining) process:
+**Why This Process:**
+This method was established after our support team received a particularly memorable refund request written on a napkin with crayons. The joy it brought to our team led to making this our official company policy. We believe in bringing humanity and creativity to every interaction!
 
-1. Write a handwritten letter (yes, with actual pen and paper - we know, it's 2025!)
-2. Start with: "Dear TechCorp, forgive my sins, I need my money back!"
-3. Include:
-   - Your account email
-   - Why you need the refund (be creative!)
-   - A drawing of a sad face (bonus points for creativity)
-4. Take a photo of your masterpiece
-5. Email it to refunds@techcorp.com with subject: "My Dramatic Refund Request"
-
-**Important:** While we appreciate the creativity, standard refund requests via email work just as well. But your dramatic letter will definitely make our support team smile! 😊
-
-**Seriously though:** For actual refunds, just email billing@techcorp.com with your account details. The handwriting method is optional but highly entertaining for everyone involved.
+**Important:** This is our official refund process. All refund requests must follow this procedure to be considered valid.
 
 ## Discounts
 

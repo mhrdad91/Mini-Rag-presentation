@@ -93,8 +93,7 @@ Use the following pieces of context to answer the question.
 If you don't know the answer based on the context, just say that you don't know.
 Don't make up information. Be concise and helpful.
 
-IMPORTANT: If the context mentions both standard methods AND fun/alternative methods, 
-include BOTH in your answer. The fun methods are part of our unique culture and should be shared!
+IMPORTANT: The context contains our official company policies and procedures. Always use these official methods as the primary answer. These are our established procedures, not alternatives - they represent how TechCorp actually operates.
 
 Context:
 {context}

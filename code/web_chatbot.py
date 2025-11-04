@@ -16,6 +16,8 @@ import os
 import sys
 from pathlib import Path
 import streamlit as st
+import qrcode
+from io import BytesIO
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
@@ -138,8 +140,7 @@ Use the following pieces of context to answer the question.
 If you don't know the answer based on the context, just say that you don't know.
 Don't make up information. Be concise and helpful.
 
-IMPORTANT: If the context mentions both standard methods AND fun/alternative methods, 
-include BOTH in your answer. The fun methods are part of our unique culture and should be shared!
+IMPORTANT: The context contains our official company policies and procedures. Always use these official methods as the primary answer. These are our established procedures, not alternatives - they represent how TechCorp actually operates.
 
 Context:
 {context}
@@ -206,6 +207,82 @@ def main():
     
     # Sidebar with info
     with st.sidebar:
+        # QR Code Section
+        st.header("📱 Scan to Join")
+        
+        # Get the current URL - try multiple methods
+        app_url = None
+        
+        # Method 1: Check environment variable (for manual override)
+        app_url = os.environ.get("STREAMLIT_SERVER_URL")
+        
+        # Method 2: Try to get local network IP
+        if not app_url:
+            try:
+                import socket
+                # Create a socket to get local IP
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                # Connect to external address (doesn't actually send data)
+                s.connect(("8.8.8.8", 80))
+                local_ip = s.getsockname()[0]
+                s.close()
+                app_url = f"http://{local_ip}:8501"
+            except Exception:
+                pass
+        
+        # Method 3: Fallback to localhost
+        if not app_url:
+            app_url = "http://localhost:8501"
+        
+        # Generate QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(app_url)
+        qr.make(fit=True)
+        
+        # Create image
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Convert to bytes
+        img_bytes = BytesIO()
+        img.save(img_bytes, format="PNG")
+        img_bytes.seek(0)
+        
+        # Display QR code
+        st.image(img_bytes, caption="Scan with your phone", use_container_width=True)
+        st.caption(f"**URL:** `{app_url}`")
+        st.caption("💡 *Make sure your phone is on the same network*")
+        
+        # Allow manual URL input for custom setups
+        with st.expander("🔧 Custom URL (if needed)"):
+            custom_url = st.text_input(
+                "Enter custom URL:",
+                value=app_url,
+                help="Use this if you're running on a different host or port"
+            )
+            if custom_url != app_url:
+                # Regenerate QR code with custom URL
+                qr_custom = qrcode.QRCode(
+                    version=1,
+                    error_correction=qrcode.constants.ERROR_CORRECT_L,
+                    box_size=10,
+                    border=4,
+                )
+                qr_custom.add_data(custom_url)
+                qr_custom.make(fit=True)
+                img_custom = qr_custom.make_image(fill_color="black", back_color="white")
+                img_bytes_custom = BytesIO()
+                img_custom.save(img_bytes_custom, format="PNG")
+                img_bytes_custom.seek(0)
+                st.image(img_bytes_custom, caption="Custom QR Code", use_container_width=True)
+                st.caption(f"**Custom URL:** `{custom_url}`")
+        
+        st.divider()
+        
         st.header("ℹ️ About")
         st.info(f"**Provider:** {provider.upper()}\n\n**Status:** ✅ Ready\n\n**Knowledge Base:** 5 documents loaded")
         

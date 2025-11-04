@@ -22,13 +22,15 @@ Run the fine-tuning command:
 ```bash
 python -m mlx_lm lora \
   --model mlx-community/Qwen2.5-1.5B-Instruct-4bit \
-  --data data/training_data.jsonl \
+  --data data/training \
   --adapter-path adapters/techcorp-support \
   --iters 100 \
   --learning-rate 1e-4 \
   --batch-size 2 \
   --train
 ```
+
+**Note:** The `--data` parameter expects a **directory** containing `train.jsonl` and `valid.jsonl` files, not a single file.
 
 **What happens:**
 - Downloads Qwen2.5 1.5B Instruct model (first time only)
@@ -46,7 +48,27 @@ python -m mlx_lm generate \
   --max-tokens 200
 ```
 
-### Step 4: Compare Fine-Tuned vs RAG
+### Step 4: Export for LM Studio (Optional)
+
+Export your fine-tuned model to use in LM Studio:
+
+```bash
+python code/09_export_model_for_lmstudio.py
+```
+
+This will:
+- Fuse the adapter with the base model
+- Export to HuggingFace format
+- Save to `models/techcorp-qwen2.5-1.5b-instruct/`
+
+**To use in LM Studio:**
+1. Open LM Studio
+2. Go to "Browse" or "Local Models"
+3. Navigate to the exported model folder
+4. Select and load the model
+5. Start chatting!
+
+### Step 5: Compare Fine-Tuned vs RAG
 
 ```bash
 python code/05_rag_vs_finetuning.py
@@ -73,7 +95,9 @@ python code/05_rag_vs_finetuning.py
 Your training data includes:
 - 31 Q&A pairs extracted from knowledge base
 - Questions about password reset, pricing, refunds, etc.
-- Both standard and fun answers included!
+- Uses official company policy answers (these are the established procedures)
+
+**Note:** The training data uses TechCorp's official company policies, which may appear unconventional but are the actual established procedures.
 
 ## Model Options
 

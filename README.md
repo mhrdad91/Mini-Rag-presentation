@@ -105,6 +105,17 @@ If you prefer to run steps manually:
    python code/02_create_vectorstore.py
    ```
 
+2b. **Inspect vector store (optional but recommended for demos):**
+   ```bash
+   python code/02b_inspect_vectorstore.py
+   ```
+   
+   This shows what's stored in the FAISS vector database:
+   - Sample chunks with metadata
+   - Embedding dimensions
+   - Example similarity searches
+   - Source file breakdown
+
 3. **Build RAG system:**
    ```bash
    python code/03_build_rag.py
@@ -126,6 +137,12 @@ If you prefer to run steps manually:
    ```
    
    The web interface will open at `http://localhost:8501`
+   
+   **QR Code Feature:**
+   - The web interface includes a QR code in the sidebar
+   - Attendees can scan it with their phones to open the chatbot
+   - Make sure everyone is on the same WiFi network
+   - The QR code automatically detects your local network IP address
 
 6. **Compare RAG vs Fine-Tuning (optional):**
    ```bash
@@ -144,11 +161,31 @@ If you prefer to run steps manually:
    
    This will:
    - Extract Q&A pairs from your knowledge base
-   - Create training data
+   - Create training data (using official company policy answers)
    - Fine-tune a Qwen2.5 1.5B Instruct model
-   - Save your custom model
+   - Save your custom adapter
+
+8. **Export fine-tuned model for LM Studio:**
+   ```bash
+   python code/09_export_model_for_lmstudio.py
+   ```
+   
+   This will:
+   - Fuse the adapter with the base model
+   - Export to HuggingFace format (compatible with LM Studio)
+   - Save to `models/techcorp-qwen2.5-1.5b-instruct/`
+   
+   Then load in LM Studio:
+   - Open LM Studio
+   - Go to "Browse" or "Local Models"
+   - Navigate to the exported model folder
+   - Load and chat!
 
    See `FINE_TUNING_GUIDE.md` for detailed instructions.
+
+### Knowledge Base and Company Policy
+
+**Important:** The knowledge base contains TechCorp's official company policies and procedures. These may appear "funny" or unconventional, but they represent the actual established procedures of the company. The RAG system and fine-tuned models are trained to use these official methods as the primary answers.
 
 ### Fine-Tuning Demo (Optional)
 
